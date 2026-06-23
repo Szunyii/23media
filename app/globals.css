@@ -1,26 +1,154 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ------------------------------------------------------------------ *
+ * 23media — design tokens
+ * Near-black canvas · bone type · molten-orange highlight
+ * ------------------------------------------------------------------ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #111110;
+  --color-ink-panel: #16150f;
+  --color-bone: #f4f3ef;
+  --color-bone-dim: #b7b6b0;
+  --color-muted: #76746c;
+  --color-line: #26251f;
+  --color-accent: #f5c518;
+  --color-accent-deep: #c99a0a;
+
+  --font-display: var(--font-bricolage);
+  --font-serif: var(--font-instrument);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #0a0a0a;
+  --foreground: #f4f3ef;
+}
+
+* {
+  min-width: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+/* Lenis smooth-scroll baseline */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #0a0a0a;
+}
+
+/* Hide native cursor only on devices that support a real pointer */
+@media (hover: hover) and (pointer: fine) {
+  .has-custom-cursor,
+  .has-custom-cursor * {
+    cursor: none;
+  }
+}
+
+/* Thin custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2922;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* Display headline tightening */
+.display {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  font-variation-settings: "wght" 800, "opsz" 48;
+}
+
+.serif-italic {
+  font-family: var(--font-serif), serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Character mask reveal used by RevealText */
+.reveal-line {
+  display: block;
+  overflow: hidden;
+}
+.reveal-line > span {
+  display: block;
+  will-change: transform;
+}
+
+@keyframes scrollcue {
+  0% { transform: translateY(-100%); }
+  50% { transform: translateY(0%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Film grain drift */
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+  100% { transform: translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  /* skip the intro curtain entirely — no flash before JS hydrates */
+  [data-preloader] {
+    display: none;
+  }
 }
