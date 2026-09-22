@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Hostinger builds the app with `output: "standalone"` (it injects the
+  // option before `next build`). The standalone server only ships traced
+  // files, so `public/` would be left out and every /clients/*, /team/*
+  // image would 404 in production. Tracing the folder in makes the build
+  // copy it to .next/standalone/public, which server.js serves as-is.
+  outputFileTracingIncludes: {
+    "/*": ["./public/**/*"],
+  },
 };
 
 export default nextConfig;
