@@ -4,18 +4,21 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "../lib/gsap";
 import Grain from "./Grain";
-import CustomCursor from "./CustomCursor";
-import ScrollProgress from "./ScrollProgress";
 import Preloader from "./Preloader";
 
 /**
  * Site-wide chrome that spans every section:
  *  - Lenis smooth scroll, synced to the GSAP ticker so ScrollTrigger stays in step
  *  - animated film grain overlay
- *  - magnetic custom cursor
- *  - fixed scroll-progress rail with section markers
  */
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({
+  children,
+  minimal = false,
+}: {
+  children: React.ReactNode;
+  /** Subpages skip the brand intro curtain. */
+  minimal?: boolean;
+}) {
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches) return;
@@ -44,13 +47,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    // `cursor: none` is already scoped to fine-pointer devices in CSS,
-    // so this class is safe to apply unconditionally.
-    <div className="has-custom-cursor">
-      <Preloader />
+    <div>
+      {!minimal && <Preloader />}
       <Grain />
-      <CustomCursor />
-      <ScrollProgress />
       {children}
     </div>
   );

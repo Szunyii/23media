@@ -1,19 +1,12 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { gsap, useGSAP } from "../lib/gsap";
 import Magnetic from "./Magnetic";
+import HeroLockup from "./HeroLockup";
 import { scrollToSection } from "../lib/sections";
 import { onIntroReady } from "../lib/intro";
-
-type Seg = { t: string; accent?: boolean };
-const HEAD_LINES: Seg[][] = [
-  [{ t: "Építsd fel a" }],
-  [
-    { t: "saját ", accent: false },
-    { t: "Branded.", accent: true },
-  ],
-];
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -33,44 +26,35 @@ export default function Hero() {
         y: 0,
         duration: 0.8,
         ease: "power3.out",
-      })
-        .from(
-          "[data-hero-word]",
-          {
-            // start fully below the mask's lower edge so the reveal slides up
-            // cleanly; the mask now has room for accents/descenders (see CSS),
-            // so overflow can stay hidden — nothing pops in at the end.
-            yPercent: 140,
-            duration: 1.15,
-            ease: "power4.out",
-            stagger: 0.1,
-          },
-          "-=0.4",
-        )
-        .to(
-          "[data-hero-fade]",
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            ease: "power3.out",
-            stagger: 0.12,
-          },
-          "-=0.7",
-        );
-
-      // subtle parallax drift of the headline as you scroll out
-      gsap.to("[data-hero-head]", {
-        yPercent: 18,
-        opacity: 0.35,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ref.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
+      }).to(
+        "[data-hero-fade]",
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          stagger: 0.12,
         },
-      });
+        "-=0.4",
+      );
+
+      // clear the lower-left corner early: the lockup's flight path down to
+      // the Manifesto crosses it
+      gsap.fromTo(
+        "[data-hero-out]",
+        { opacity: 1 },
+        {
+          opacity: 0,
+          ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top top",
+            end: "+=300",
+            scrub: true,
+          },
+        },
+      );
 
       const unsub = onIntroReady(() => tl.play());
       const fallback = window.setTimeout(() => tl.play(), 4000);
@@ -86,9 +70,13 @@ export default function Hero() {
     <section
       id="top"
       ref={ref}
-      className="relative flex min-h-[100svh] flex-col justify-between overflow-hidden"
+      /* no overflow-hidden: the lockup leaves this section on scroll and
+         travels down into the Manifesto text */
+      className="relative flex min-h-[100svh] flex-col justify-between"
     >
-      <div className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-1 flex-col justify-between px-5 pb-10 pt-32 sm:px-8 sm:pt-36">
+      {/* no z-index here: a stacking context would trap the lockup below the
+          Preloader curtain, and it has to play the intro above it */}
+      <div className="relative mx-auto flex w-full max-w-[1600px] flex-1 flex-col justify-between px-5 pb-10 pt-32 sm:px-8 sm:pt-36">
         {/* eyebrow */}
         <div
           data-hero-eyebrow
@@ -96,69 +84,54 @@ export default function Hero() {
         >
           <span className="h-px w-10 bg-accent" />
           <span className="eyebrow text-bone-dim">
-            23media — kreatív- és médiastúdió
+            23media — média <span className="normal-case">és</span> marketing
+            ügynökség
           </span>
         </div>
 
-        {/* headline */}
-        <h1
-          data-hero-head
-          className="display max-w-[15ch] text-[clamp(2.7rem,9vw,9.2rem)]"
-        >
-          {HEAD_LINES.map((line, i) => (
-            <span
-              key={i}
-              data-hero-mask
-              /* padding gives the clip box room for accents (top) and
-                 descenders (bottom); equal negative margins cancel it out so
-                 the 0.92 line-height stays pixel-identical */
-              className="mb-[-0.22em] mt-[-0.3em] block overflow-hidden pb-[0.22em] pt-[0.3em]"
-            >
-              <span data-hero-word className="block">
-                {line.map((seg, j) =>
-                  seg.accent ? (
-                    <span key={j} className="serif-italic text-accent">
-                      {seg.t}
-                    </span>
-                  ) : (
-                    <span key={j}>{seg.t}</span>
-                  ),
-                )}
-              </span>
-            </span>
-          ))}
-        </h1>
+        <h1 className="sr-only">23media — média és marketing ügynökség</h1>
+
+        {/* brand lockup — performs the first-load intro, then keeps turning */}
+        <HeroLockup />
 
         {/* bottom row */}
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+        <div
+          data-hero-out
+          className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between"
+        >
+          {/* slogan, not body copy: the site's statement voice (Bricolage medium,
+              tight tracking, full bone) at a size that stays below the lockup */}
           <p
             data-hero-fade
-            className="max-w-md translate-y-4 text-balance text-[15px] leading-relaxed text-bone-dim opacity-0"
+            className="max-w-md translate-y-4 text-balance font-display text-[clamp(1.0625rem,1.25vw,1.25rem)] font-medium leading-snug tracking-tight text-bone opacity-0"
           >
-            A 23media a márkád mögött — stratégiától a megjelenésig, egy
-            csapatban.
+            Tervezéstől a kivitelezésig, egy kézben!
           </p>
 
           <div
             data-hero-fade
-            className="flex translate-y-4 items-center gap-4 opacity-0"
+            className="flex translate-y-4 flex-wrap items-center gap-4 opacity-0"
           >
             <Magnetic strength={0.4}>
-              <button
-                onClick={() => scrollToSection("contact")}
-                data-cursor="beszéljünk"
-                className="rounded-full bg-accent px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-bone"
+              <Link
+                href="/konzultacio"
+                className="group inline-flex items-center gap-3 rounded-full bg-accent px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-bone"
               >
-                Indítsunk projektet
-              </button>
+                Ingyenes konzultáció
+                <span
+                  aria-hidden
+                  className="inline-block transition-transform duration-300 group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </Link>
             </Magnetic>
             <Magnetic strength={0.3}>
               <button
                 onClick={() => scrollToSection("work")}
-                data-cursor=""
                 className="rounded-full border border-bone/20 px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.18em] text-bone transition-colors hover:border-bone"
               >
-                Munkáink
+                Referenciák
               </button>
             </Magnetic>
           </div>
@@ -166,19 +139,21 @@ export default function Hero() {
       </div>
 
       {/* scroll cue */}
-      <div
-        data-hero-fade
-        className="relative z-10 mx-auto mb-6 flex w-full max-w-[1600px] translate-y-4 items-center justify-between px-5 opacity-0 sm:px-8"
-      >
-        <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">
-          Est. 2025
-        </span>
-        <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-muted">
-          Görgess
-          <span className="relative block h-7 w-px overflow-hidden bg-bone/20">
-            <span className="absolute inset-0 animate-[scrollcue_1.8s_ease-in-out_infinite] bg-accent" />
+      <div data-hero-out>
+        <div
+          data-hero-fade
+          className="relative z-10 mx-auto mb-6 flex w-full max-w-[1600px] translate-y-4 items-center justify-between px-5 opacity-0 sm:px-8"
+        >
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">
+            Est. 2025
           </span>
-        </span>
+          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-muted">
+            Görgess
+            <span className="relative block h-7 w-px overflow-hidden bg-bone/20">
+              <span className="absolute inset-0 animate-[scrollcue_1.8s_ease-in-out_infinite] bg-accent" />
+            </span>
+          </span>
+        </div>
       </div>
     </section>
   );

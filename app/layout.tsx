@@ -32,7 +32,7 @@ const instrument = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "23media — Márkák, amik megmozgatnak.",
+  title: "23MEDIA — Márkák, amik megmozgatnak.",
   description:
     "A 23media egy teljes körű kreatívstúdió, amely olyan márkákat, weboldalakat, tartalmakat és növekedési kampányokat épít, amik megmozgatják a kultúrát és a fontos mutatókat.",
   metadataBase: new URL("https://23media.studio"),

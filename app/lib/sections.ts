@@ -2,10 +2,9 @@ export const SECTIONS = [
   { id: "top", label: "Bevezető" },
   { id: "manifesto", label: "Kiáltvány" },
   { id: "services", label: "Szolgáltatások" },
-  { id: "work", label: "Munkáink" },
+  { id: "work", label: "Referenciák" },
   { id: "stats", label: "Hatás" },
-  { id: "process", label: "Folyamat" },
-  { id: "team", label: "Csapat" },
+  { id: "founder", label: "Alapító" },
   { id: "contact", label: "Kapcsolat" },
 ] as const;
 

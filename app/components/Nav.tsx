@@ -1,42 +1,90 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { gsap, useGSAP } from "../lib/gsap";
 import Logo from "./Logo";
 import Magnetic from "./Magnetic";
 import { scrollToSection } from "../lib/sections";
+import { onIntroReady } from "../lib/intro";
 
 const LINKS = [
   { id: "services", label: "Szolgáltatások" },
-  { id: "work", label: "Munkáink" },
-  { id: "process", label: "Folyamat" },
-  { id: "team", label: "Csapat" },
+  { id: "work", label: "Referenciák" },
+  { id: "founder", label: "Alapító" },
 ];
 
 export default function Nav() {
   const ref = useRef<HTMLElement>(null);
-  const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useGSAP(
     () => {
-      // entrance
-      gsap.from(ref.current, {
-        yPercent: -120,
-        opacity: 0,
-        duration: 1.1,
-        delay: 0.2,
-        ease: "power3.out",
+      const el = ref.current;
+      if (!el) return;
+
+      // The nav stays in the top bar the whole time — no hide-on-scroll. The only
+      // scroll reaction is the collapse-to-pill below. The entrance is held until
+      // the preloader hands off (onIntroReady) so it is never racing the curtain
+      // lift, which was the source of the intermittent black flash on load.
+      //
+      // Start hidden, then reveal once the intro is released. When we mount at the
+      // top the pill background is transparent, so the nav can slide down cleanly.
+      // If we mount already scrolled (Fast Refresh, restored scroll) the pill is
+      // dark — sliding it down would drop a black bar in, so we just fade in place.
+      // Read the position when the intro releases, not at mount — scroll
+      // restoration can land after hydration.
+      gsap.set(el, { autoAlpha: 0 });
+      const off = onIntroReady(() => {
+        if (window.scrollY > 80) {
+          gsap.to(el, { autoAlpha: 1, duration: 0.5, ease: "power2.out" });
+        } else {
+          gsap.fromTo(
+            el,
+            { yPercent: -110 },
+            {
+              yPercent: 0,
+              autoAlpha: 1,
+              duration: 1,
+              delay: 0.15,
+              ease: "power3.out",
+            },
+          );
+        }
       });
 
-      // hide on scroll-down, reveal on scroll-up
-      let last = window.scrollY;
-      const onScroll = () => {
+      // Collapse to the pill purely from scroll position, with hysteresis so a
+      // scroll position hovering right on the threshold can't flicker the dark
+      // background on and off. Deferred to rAF to avoid setState in the effect body.
+      //
+      // The initial sync goes through the same `sync` as scroll events: on a reload
+      // the browser's scroll restoration fires a scroll event that cancels the
+      // pending frame, so a separate "set initial state" callback would be lost
+      // and the nav would stay expanded over the content until the next threshold
+      // crossing.
+      let raf = 0;
+      let collapsed = false;
+      let synced = false;
+      const sync = () => {
         const y = window.scrollY;
-        setHidden(y > last && y > 240);
-        last = y;
+        if (!collapsed && y > 96) collapsed = true;
+        else if (collapsed && y < 56) collapsed = false;
+        else if (synced) return;
+        synced = true;
+        setScrolled(collapsed);
+      };
+      const onScroll = () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sync);
       };
       window.addEventListener("scroll", onScroll, { passive: true });
-      return () => window.removeEventListener("scroll", onScroll);
+      raf = requestAnimationFrame(sync);
+
+      return () => {
+        off();
+        cancelAnimationFrame(raf);
+        window.removeEventListener("scroll", onScroll);
+      };
     },
     { scope: ref },
   );
@@ -44,19 +92,43 @@ export default function Nav() {
   return (
     <header
       ref={ref}
-      className={`fixed inset-x-0 top-0 z-50 transition-transform duration-500 ${
-        hidden ? "-translate-y-full" : "translate-y-0"
+      className={`fixed inset-x-0 top-0 z-50 transition-[padding] duration-500 ${
+        scrolled ? "px-3 pt-3 sm:px-4" : "px-0 pt-0"
       }`}
     >
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-5 sm:px-8">
-        <Logo />
+      <div
+        className={`relative mx-auto flex items-center justify-between transition-[max-width,padding] duration-500 ${
+          scrolled
+            ? "max-w-215 px-4 py-2.5 sm:px-6"
+            : "max-w-400 px-5 py-5 sm:px-8"
+        }`}
+      >
+        {/* Surface layer fades separately from the width morph — a shared
+            transition paints a full-width dark bar while collapsing/expanding */}
+        <span
+          aria-hidden
+          className={`absolute inset-0 -z-10 rounded-full border border-bone/10 bg-ink-soft/95 shadow-[0_10px_40px_rgba(0,0,0,0.45)] transition-[opacity,visibility] ${
+            scrolled
+              ? "visible opacity-100 delay-200 duration-300"
+              : "invisible opacity-0 delay-0 duration-200"
+          }`}
+        />
 
-        <nav className="hidden items-center gap-9 md:flex">
+        <Logo
+          className={`origin-left transition-transform uppercase duration-500 ${
+            scrolled ? "scale-[0.82]" : ""
+          }`}
+        />
+
+        <nav
+          className={`hidden items-center transition-[gap] duration-500 md:flex ${
+            scrolled ? "gap-7" : "gap-9"
+          }`}
+        >
           {LINKS.map((l) => (
             <button
               key={l.id}
               onClick={() => scrollToSection(l.id)}
-              data-cursor=""
               className="group relative font-mono text-[11px] uppercase tracking-[0.18em] text-bone-dim transition-colors hover:text-bone"
             >
               {l.label}
@@ -66,14 +138,15 @@ export default function Nav() {
         </nav>
 
         <Magnetic strength={0.35}>
-          <button
-            onClick={() => scrollToSection("contact")}
-            data-cursor="köszönj be"
-            className="group flex items-center gap-2 rounded-full border border-bone/20 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-bone transition-colors hover:border-accent hover:bg-accent hover:text-ink"
+          <Link
+            href="/konzultacio"
+            className={`group flex items-center gap-2 rounded-full border border-bone/20 font-mono text-[11px] uppercase tracking-[0.18em] text-bone transition-all duration-300 hover:border-accent hover:bg-accent hover:text-ink ${
+              scrolled ? "px-4 py-2" : "px-5 py-2.5"
+            }`}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-accent transition-colors group-hover:bg-ink" />
-            Indítsunk projektet
-          </button>
+            Ingyenes konzultáció
+          </Link>
         </Magnetic>
       </div>
     </header>

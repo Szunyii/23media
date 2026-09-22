@@ -3,15 +3,10 @@
 import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 
-const ITEMS = [
-  "Márkaépítés",
-  "Weboldalak",
-  "Tartalom",
-  "Fizetett hirdetés",
-  "Közösségi média",
-  "Stratégia",
-  "Film",
-];
+const SERVICES = ["Tartalomgyártás", "Marketing", "Fejlesztés"];
+
+// doubled so one Row stays wider than the viewport and the loop never gaps
+const ITEMS = [...SERVICES, ...SERVICES];
 
 function Row() {
   return (

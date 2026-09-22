@@ -8,8 +8,7 @@ import { scrollToSection } from "../lib/sections";
 const SOCIALS = ["Instagram", "LinkedIn", "Behance", "X / Twitter"];
 const SITEMAP = [
   { id: "services", label: "Szolgáltatások" },
-  { id: "work", label: "Munkáink" },
-  { id: "process", label: "Folyamat" },
+  { id: "work", label: "Referenciák" },
   { id: "manifesto", label: "Stúdió" },
 ];
 
@@ -18,7 +17,6 @@ function RotatingCTA() {
     <Magnetic strength={0.5}>
       <button
         onClick={() => (window.location.href = "mailto:hello@23media.studio")}
-        data-cursor="köszönj be"
         className="group relative grid h-40 w-40 place-items-center rounded-full bg-accent text-ink transition-transform duration-500 hover:scale-105 sm:h-48 sm:w-48"
         aria-label="Írj a 23media-nek"
       >
@@ -84,22 +82,34 @@ export default function Contact() {
     <footer id="contact" ref={ref} className="relative bg-ink pt-28 sm:pt-36">
       <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
         <div className="mb-6 flex items-center gap-3">
-          <span className="font-mono text-[11px] text-accent">(07)</span>
+          <span className="font-mono text-[11px] text-accent">(06)</span>
           <span className="eyebrow text-muted">Beszéljünk</span>
         </div>
 
         <div className="flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between">
           <h2
             data-contact-head
-            className="display text-[clamp(2.6rem,8vw,8rem)] leading-[0.95]"
+            className="display text-[clamp(2.6rem,6.5vw,7.4rem)] leading-[0.95] [text-wrap:balance]"
           >
-            <span className="block overflow-hidden">
-              <span className="block">Van egy márkád,</span>
+            {/* Size: the longest line ("Elindult benned valami", 10.66em) must fit
+                beside the 192px CTA from the lg breakpoint up — 6.5vw clears it at
+                1024 (709/720px) and the 7.4rem cap at the 1600px container.
+                text-wrap:balance only matters on phones, where line 1 wraps: it
+                gives "Elindult / benned valami" instead of orphaning "valami".
+                Each line is masked (overflow-hidden) for the yPercent reveal, but the
+                0.92 line-height box is shorter than the glyphs: Bricolage's inline box
+                overshoots it by 0.14em, Instrument Serif italic's by 0.19em, so g/y
+                descenders got chopped. The inner span pads the mask down by that much;
+                the mask's equal negative margin keeps the line rhythm and h2 height. */}
+            <span className="-mb-[0.14em] block overflow-hidden">
+              <span className="block pb-[0.14em]">Elindult benned valami</span>
             </span>
-            <span className="block overflow-hidden">
-              <span className="block">
-                amit érdemes{" "}
-                <span className="serif-italic text-accent">megmozgatni?</span>
+            <span className="-mb-[0.14em] block overflow-hidden">
+              <span className="block pb-[0.14em]">és szeretnél róla</span>
+            </span>
+            <span className="-mb-[0.19em] block overflow-hidden">
+              <span className="block pb-[0.19em]">
+                <span className="serif-italic text-accent">beszélni?</span>
               </span>
             </span>
           </h2>
@@ -115,7 +125,6 @@ export default function Contact() {
             <p className="eyebrow mb-4 text-muted">Email</p>
             <a
               href="mailto:hello@23media.studio"
-              data-cursor=""
               className="group inline-block text-[15px] text-bone transition-colors hover:text-accent"
             >
               hello@23media.studio
@@ -138,7 +147,6 @@ export default function Contact() {
                 <li key={l.id}>
                   <button
                     onClick={() => scrollToSection(l.id)}
-                    data-cursor=""
                     className="text-[15px] text-bone-dim transition-colors hover:text-bone"
                   >
                     {l.label}
@@ -154,7 +162,6 @@ export default function Contact() {
                 <li key={s}>
                   <a
                     href="#"
-                    data-cursor=""
                     className="text-[15px] text-bone-dim transition-colors hover:text-bone"
                   >
                     {s}
@@ -183,7 +190,6 @@ export default function Contact() {
           <span>Saját csapat tervezte és építette · Világszerte</span>
           <button
             onClick={() => scrollToSection("top")}
-            data-cursor=""
             className="transition-colors hover:text-accent"
           >
             Vissza a tetejére ↑

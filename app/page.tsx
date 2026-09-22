@@ -4,10 +4,10 @@ import Hero from "./components/Hero";
 import Manifesto from "./components/Manifesto";
 import Marquee from "./components/Marquee";
 import Services from "./components/Services";
-import Work from "./components/Work";
+import PersonalBranding from "./components/PersonalBranding";
+import Testimonials from "./components/Testimonials";
 import Stats from "./components/Stats";
-import Process from "./components/Process";
-import Team from "./components/Team";
+import Founder from "./components/Founder";
 import Contact from "./components/Contact";
 
 export default function Home() {
@@ -19,10 +19,10 @@ export default function Home() {
         <Manifesto />
         <Marquee />
         <Services />
-        <Work />
+        <PersonalBranding />
+        <Testimonials />
         <Stats />
-        <Process />
-        <Team />
+        <Founder />
         <Contact />
       </main>
     </Providers>
