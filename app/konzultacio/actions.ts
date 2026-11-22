@@ -1,5 +1,8 @@
 "use server";
 
+import nodemailer from "nodemailer";
+import { fullName, inquiryHtml, inquirySubject, inquiryText } from "./inquiry-mail";
+
 /** The seven fields the client asked for, in their order. Only `company`
  *  and `website` are optional — a personal brand may have neither. */
 export type InquiryFields = {
@@ -94,43 +97,49 @@ export async function sendInquiry(
   return { status: "ok", firstName: fields.firstName, email: fields.email };
 }
 
-function render(i: InquiryFields) {
-  return [
-    `Név: ${i.lastName} ${i.firstName}`,
-    `E-mail: ${i.email}`,
-    `Telefon: ${i.phone}`,
-    `Cég: ${i.company || "—"}`,
-    `Foglalkozás: ${i.occupation}`,
-    `Weboldal: ${i.website || "—"}`,
-  ].join("\n");
-}
-
 /**
- * Delivery: sends through Resend when RESEND_API_KEY is set (see .env.example),
- * otherwise logs to the server console so the flow works in development.
+ * Delivery: an e-mail into the 23@23media.hu Hostinger mailbox, sent over
+ * Hostinger's SMTP as that mailbox (see .env.example). Reply-To is the
+ * visitor, so answering the mail writes straight to them.
+ *
+ * Only SMTP_PASS has to be set; the rest defaults to the Hostinger mailbox.
+ * Without it the inquiry is printed to the server console in development,
+ * and in production the visitor gets the error with the direct address —
+ * a submission must never look sent when it went nowhere.
  */
 async function deliver(i: InquiryFields) {
-  const key = process.env.RESEND_API_KEY;
-  const to = process.env.INQUIRY_TO ?? FALLBACK_TO;
-  const text = render(i);
+  const at = new Date();
+  const user = process.env.SMTP_USER || FALLBACK_TO;
+  const pass = process.env.SMTP_PASS;
+  const to = process.env.INQUIRY_TO || FALLBACK_TO;
 
-  if (!key) {
-    console.log(`[konzultacio] új megkeresés (RESEND_API_KEY nincs beállítva)\n${text}`);
+  if (!pass) {
+    if (process.env.NODE_ENV === "production") throw new Error("SMTP_PASS is not set");
+    console.log(
+      `[konzultacio] új megkeresés (SMTP_PASS nincs beállítva, nem ment ki e-mail)\n${inquiryText(i, at)}`,
+    );
     return;
   }
 
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from: process.env.INQUIRY_FROM ?? "23media <onboarding@resend.dev>",
-      to: [to],
-      reply_to: i.email,
-      subject: `Ingyenes konzultáció — ${i.lastName} ${i.firstName}${
-        i.company ? ` (${i.company})` : ""
-      }`,
-      text,
-    }),
+  const port = Number(process.env.SMTP_PORT) || 465;
+  const transport = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.hostinger.com",
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 20_000,
   });
-  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+
+  await transport.sendMail({
+    // Hostinger only relays mail whose From is the signed-in mailbox; the
+    // visitor's name goes in the display name so the inbox list shows who wrote.
+    from: { name: `${fullName(i)} · 23media.hu`, address: user },
+    to,
+    replyTo: { name: fullName(i), address: i.email },
+    subject: inquirySubject(i),
+    text: inquiryText(i, at),
+    html: inquiryHtml(i, at),
+  });
 }

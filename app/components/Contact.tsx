@@ -195,7 +195,6 @@ export default function Contact() {
       <div className="border-t border-line">
         <div className="mx-auto flex max-w-[1600px] flex-col items-center justify-between gap-3 px-5 py-6 font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:flex-row sm:px-8">
           <span>© {new Date().getFullYear()} 23media — Minden jog fenntartva</span>
-          <span>Saját csapat tervezte és építette · Világszerte</span>
           <button
             onClick={() => scrollToSection("top")}
             className="transition-colors hover:text-accent"
