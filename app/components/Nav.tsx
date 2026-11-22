@@ -6,7 +6,7 @@ import { gsap, useGSAP } from "../lib/gsap";
 import Logo from "./Logo";
 import Magnetic from "./Magnetic";
 import { scrollToSection } from "../lib/sections";
-import { onIntroReady } from "../lib/intro";
+import { INTRO_SPEED, onIntroReady } from "../lib/intro";
 
 const LINKS = [
   { id: "services", label: "Szolgáltatások" },
@@ -45,8 +45,8 @@ export default function Nav() {
             {
               yPercent: 0,
               autoAlpha: 1,
-              duration: 1,
-              delay: 0.15,
+              duration: 1 / INTRO_SPEED,
+              delay: 0.15 / INTRO_SPEED,
               ease: "power3.out",
             },
           );

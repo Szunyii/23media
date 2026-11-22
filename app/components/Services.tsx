@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { gsap, useGSAP } from "../lib/gsap";
+import SectionLabel from "./SectionLabel";
 
 /** Plain copy, or `{ hl }` for the self-awareness bits that get the marker. */
 type Part = string | { hl: string };
@@ -45,7 +46,7 @@ const SERVICES: { n: string; title: string; desc: Part[]; items: Part[] }[] = [
     n: "05",
     title: "Social management",
     desc: [
-      "Teljes körű közösségimédia-kezelést biztosítunk. Posztolunk, interaktálunk a közönségeddel, és olyan oldalstruktúrát állítunk fel, amiben nem akadnak el az érdeklődők!",
+      "Teljes körű közösségi média kezelést biztosítunk. Posztolunk, interaktálunk a közönségeddel, és olyan oldalstruktúrát állítunk fel, amiben nem akadnak el az érdeklődők!",
     ],
     items: ["Stratégia", "Interakció", "Rendszer", "Posztolás"],
   },
@@ -67,7 +68,9 @@ export default function Services() {
       if (!viewport || !track) return;
 
       const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
       const setX = gsap.quickSetter(track, "x", "px") as (v: number) => void;
 
       // `state.x` is the single source of truth for the track position: drag,
@@ -93,7 +96,11 @@ export default function Services() {
       const min = () => snaps[snaps.length - 1];
       const max = () => snaps[0];
       const nearestSnap = (x: number) =>
-        snaps.reduce((best, s, i) => (Math.abs(s - x) < Math.abs(snaps[best] - x) ? i : best), 0);
+        snaps.reduce(
+          (best, s, i) =>
+            Math.abs(s - x) < Math.abs(snaps[best] - x) ? i : best,
+          0,
+        );
 
       const go = (i: number) => {
         const n = gsap.utils.clamp(0, cards.length - 1, i);
@@ -113,7 +120,8 @@ export default function Services() {
         if (!dirty && v === 0 && Math.abs(skew) < 0.01) return;
         dirty = false;
         lastX = state.x;
-        skew += ((reduced ? 0 : gsap.utils.clamp(-4, 4, v * 0.1)) - skew) * 0.14;
+        skew +=
+          ((reduced ? 0 : gsap.utils.clamp(-4, 4, v * 0.1)) - skew) * 0.14;
         setX(state.x);
 
         let nearest = 0;
@@ -125,7 +133,11 @@ export default function Services() {
             nearest = i;
           }
           const t = Math.min(d / step, 1);
-          gsap.set(card, { scale: 1 - 0.07 * t, opacity: 1 - 0.6 * t, skewX: skew });
+          gsap.set(card, {
+            scale: 1 - 0.07 * t,
+            opacity: 1 - 0.6 * t,
+            skewX: skew,
+          });
         });
         if (nearest !== index) {
           index = nearest;
@@ -144,7 +156,11 @@ export default function Services() {
       let lastMoveT = 0;
 
       const rubber = (x: number) =>
-        x > max() ? max() + (x - max()) * 0.3 : x < min() ? min() + (x - min()) * 0.3 : x;
+        x > max()
+          ? max() + (x - max()) * 0.3
+          : x < min()
+            ? min() + (x - min()) * 0.3
+            : x;
 
       const onDown = (e: PointerEvent) => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -182,7 +198,8 @@ export default function Services() {
         if (e.timeStamp - lastMoveT > 80) vel = 0; // paused before letting go
         let n = nearestSnap(state.x + vel * 220);
         // a decisive flick always advances, even if it was short
-        if (n === startIndex && Math.abs(vel) > 0.4) n = startIndex - Math.sign(vel);
+        if (n === startIndex && Math.abs(vel) > 0.4)
+          n = startIndex - Math.sign(vel);
         go(n);
       };
 
@@ -275,10 +292,9 @@ export default function Services() {
       {/* header */}
       <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
         <div>
-          <div data-reveal className="mb-5 flex items-center gap-3">
-            <span className="font-mono text-[11px] text-accent">(02)</span>
-            <span className="eyebrow text-muted">Szolgáltatások</span>
-          </div>
+          <SectionLabel data-reveal className="mb-5">
+            Szolgáltatások
+          </SectionLabel>
           <h2
             data-reveal
             className="display text-[clamp(2.4rem,5vw,4.6rem)] leading-[0.98]"
@@ -301,7 +317,10 @@ export default function Services() {
         aria-label="Szolgáltatások — húzd, vagy használd a nyílbillentyűket"
         className="mt-3 cursor-grab touch-pan-y select-none py-6 outline-none focus-visible:ring-1 focus-visible:ring-accent/60 sm:mt-4"
       >
-        <div ref={trackRef} className="relative flex w-max items-stretch gap-5 px-5 sm:gap-7">
+        <div
+          ref={trackRef}
+          className="relative flex w-max items-stretch gap-5 px-5 sm:gap-7"
+        >
           {SERVICES.map((s, i) => (
             <article
               key={s.n}
@@ -382,12 +401,16 @@ export default function Services() {
             >
               <span
                 className={`block h-px transition-colors duration-500 group-focus-visible/tab:bg-bone ${
-                  i === active ? "bg-accent" : "bg-bone/15 group-hover/tab:bg-bone/50"
+                  i === active
+                    ? "bg-accent"
+                    : "bg-bone/15 group-hover/tab:bg-bone/50"
                 }`}
               />
               <span
                 className={`mt-3 hidden font-mono text-[10px] uppercase leading-snug tracking-[0.14em] transition-colors duration-500 lg:block ${
-                  i === active ? "text-bone" : "text-muted group-hover/tab:text-bone-dim"
+                  i === active
+                    ? "text-bone"
+                    : "text-muted group-hover/tab:text-bone-dim"
                 }`}
               >
                 {s.title}
@@ -398,20 +421,30 @@ export default function Services() {
 
         <div className="flex shrink-0 items-center gap-3">
           <span className="mr-2 font-mono text-[11px] tracking-[0.2em] text-muted">
-            <span className="text-bone">{SERVICES[active].n}</span> / 0{SERVICES.length}
+            <span className="text-bone">{SERVICES[active].n}</span> / 0
+            {SERVICES.length}
           </span>
           {[-1, 1].map((dir) => {
-            const disabled = dir < 0 ? active === 0 : active === SERVICES.length - 1;
+            const disabled =
+              dir < 0 ? active === 0 : active === SERVICES.length - 1;
             return (
               <button
                 key={dir}
                 type="button"
                 onClick={() => goRef.current(active + dir)}
                 disabled={disabled}
-                aria-label={dir < 0 ? "Előző szolgáltatás" : "Következő szolgáltatás"}
+                aria-label={
+                  dir < 0 ? "Előző szolgáltatás" : "Következő szolgáltatás"
+                }
                 className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-line text-bone outline-none transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-ink focus-visible:border-accent disabled:cursor-default disabled:opacity-30 disabled:hover:border-line disabled:hover:bg-transparent disabled:hover:text-bone"
               >
-                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden>
+                <svg
+                  width="16"
+                  height="12"
+                  viewBox="0 0 16 12"
+                  fill="none"
+                  aria-hidden
+                >
                   <path
                     d={dir < 0 ? "M6 1 1 6l5 5M1 6h14" : "M10 1l5 5-5 5M15 6H1"}
                     stroke="currentColor"

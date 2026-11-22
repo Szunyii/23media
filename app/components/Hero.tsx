@@ -6,7 +6,7 @@ import { gsap, useGSAP } from "../lib/gsap";
 import Magnetic from "./Magnetic";
 import HeroLockup from "./HeroLockup";
 import { scrollToSection } from "../lib/sections";
-import { onIntroReady } from "../lib/intro";
+import { INTRO_SPEED, onIntroReady } from "../lib/intro";
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -20,7 +20,7 @@ export default function Hero() {
       // Built paused; the Preloader releases the intro as its curtain lifts so
       // the headline reveal isn't wasted behind the loader. A timeout is a
       // safety net in case the preloader never reports in.
-      const tl = gsap.timeline({ paused: true });
+      const tl = gsap.timeline({ paused: true }).timeScale(INTRO_SPEED);
       tl.to("[data-hero-eyebrow]", {
         opacity: 1,
         y: 0,
@@ -84,8 +84,7 @@ export default function Hero() {
         >
           <span className="h-px w-10 bg-accent" />
           <span className="eyebrow text-bone-dim">
-            23media — média <span className="normal-case">és</span> marketing
-            ügynökség
+            Média <span className="normal-case">és</span> marketing ügynökség
           </span>
         </div>
 

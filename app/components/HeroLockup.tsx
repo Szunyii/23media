@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
-import { isIntroReleased, releaseIntro } from "../lib/intro";
+import { INTRO_SPEED, isIntroReleased, releaseIntro } from "../lib/intro";
 import {
   MARK_BANDS,
   MARK_H,
@@ -44,6 +44,9 @@ const SEAM = 0.6;
 const TURN = 0.8; // one 90° tip of the prism
 const TURN_EASE = "expo.inOut";
 const HOLD = 0.85; // rest on a service word
+// the word roll (tips + rests) runs 1.25 × 1.25 ≈ 56% faster than the rest of
+// the intro: a tip takes ~0.41s, a rest ~0.44s
+const ROLL_SPEED = INTRO_SPEED * 1.25 * 1.25;
 const Z_ABOVE_CURTAIN = 110; // Preloader is z-100
 // lockup geometry, in units of the mark height (--h)
 const GAP = 0.2;
@@ -139,13 +142,14 @@ export default function HeroLockup() {
             TURN * 0.12,
           );
         }
-        return tl;
+        // speed up only once built — see the intro timeline below for why
+        return tl.timeScale(ROLL_SPEED);
       };
 
       const schedule = () => {
         // the sequence plays once and comes to rest on the name
         if (!alive || pending || turning || current === LAST) return;
-        pending = gsap.delayedCall(hurry ? 0 : HOLD, () => {
+        pending = gsap.delayedCall(hurry ? 0 : HOLD / ROLL_SPEED, () => {
           pending = null;
           if (!alive) return;
           active = turn(hurry ? LAST : current + 1, current, schedule);
@@ -309,14 +313,24 @@ export default function HeroLockup() {
       const intro = gsap.timeline();
       active = intro;
       intro
-        .set("[data-bar]", { autoAlpha: 0 })
-        .from("[data-bar]", {
-          x: (_i, el) => ((el as HTMLElement).dataset.dir === "l" ? -180 : 180),
-          autoAlpha: 0,
-          duration: 0.75,
-          ease: "power4.out",
-          stagger: (_i, el) => Number((el as HTMLElement).dataset.row) * 0.09,
-        })
+        // fromTo, not set + from: in dev the StrictMode re-mount lands after a
+        // few frames, and reverting the first run left the bands hidden — a
+        // .from() then read that as its target and tweened them 0 → 0
+        .fromTo(
+          "[data-bar]",
+          {
+            x: (_i, el) =>
+              (el as HTMLElement).dataset.dir === "l" ? -180 : 180,
+            autoAlpha: 0,
+          },
+          {
+            x: 0,
+            autoAlpha: 1,
+            duration: 0.75,
+            ease: "power4.out",
+            stagger: (_i, el) => Number((el as HTMLElement).dataset.row) * 0.09,
+          },
+        )
         .fromTo(
           dot,
           { scale: 0, autoAlpha: 0 },
@@ -335,9 +349,13 @@ export default function HeroLockup() {
         .add(() => {
           active = turn(0, null, schedule);
         }, "open+=0.22")
-        // drop back into the page once the curtain (0.8s) is gone, so the
-        // lockup can never scroll over the fixed nav
-        .set(root, { clearProps: "zIndex" }, "open+=1.3");
+        // drop back into the page once the curtain (0.8s, same INTRO_SPEED) is
+        // gone, so the lockup can never scroll over the fixed nav
+        .set(root, { clearProps: "zIndex" }, "open+=1.3")
+        // Speed up only AFTER building: timeScale() on an empty timeline
+        // initialises it, and every child added later then renders the moment
+        // it is added (a .set() fires early, a .from() reads the wrong target).
+        .timeScale(INTRO_SPEED);
 
       return cleanup;
     },

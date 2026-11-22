@@ -15,7 +15,7 @@ There is no test framework configured.
 
 ## Architecture
 
-Next.js **16.2.9** App Router project with React 19, TypeScript (strict), and Tailwind CSS v4.
+Next.js **16.4.5** App Router project with React 19, TypeScript (strict), and Tailwind CSS v4.
 
 - All routes live in `app/`. Currently just the root layout (`app/layout.tsx`, loads Geist fonts and global CSS) and home page (`app/page.tsx`).
 - Tailwind v4 is configured through PostCSS (`@tailwindcss/postcss`) — there is **no** `tailwind.config.*` file. Theme tokens (colors, fonts) are defined in `app/globals.css` via the `@theme inline` block and CSS variables; dark mode follows `prefers-color-scheme`.

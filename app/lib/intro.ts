@@ -5,6 +5,14 @@
  * Late subscribers still fire immediately if the intro is already released,
  * so there is no way to "miss" the signal regardless of mount order.
  */
+/**
+ * Playback rate of the whole first-load choreography (mark assembly, word
+ * roll, curtain, hero + nav entrance). 1.25 = every step takes 80% as long.
+ * The word roll multiplies this by a further 1.25 × 1.25 (ROLL_SPEED in
+ * HeroLockup).
+ */
+export const INTRO_SPEED = 1.25;
+
 let released = false;
 const subscribers = new Set<() => void>();
 

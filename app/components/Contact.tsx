@@ -1,24 +1,26 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { gsap, useGSAP } from "../lib/gsap";
 import Magnetic from "./Magnetic";
 import { scrollToSection } from "../lib/sections";
+import SectionLabel from "./SectionLabel";
 
-const SOCIALS = ["Instagram", "LinkedIn", "Behance", "X / Twitter"];
 const SITEMAP = [
   { id: "services", label: "Szolgáltatások" },
   { id: "work", label: "Referenciák" },
-  { id: "manifesto", label: "Stúdió" },
 ];
 
 function RotatingCTA() {
   return (
     <Magnetic strength={0.5}>
-      <button
-        onClick={() => (window.location.href = "mailto:hello@23media.studio")}
+      {/* the section's main CTA leads to the consultation form, like every
+          other CTA on the page; the e-mail address stays in the list below */}
+      <Link
+        href="/konzultacio"
         className="group relative grid h-40 w-40 place-items-center rounded-full bg-accent text-ink transition-transform duration-500 hover:scale-105 sm:h-48 sm:w-48"
-        aria-label="Írj a 23media-nek"
+        aria-label="Ingyenes konzultáció kérése"
       >
         <svg
           viewBox="0 0 100 100"
@@ -47,7 +49,7 @@ function RotatingCTA() {
         >
           <path d="M7 17L17 7M17 7H8M17 7V16" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-      </button>
+      </Link>
     </Magnetic>
   );
 }
@@ -81,10 +83,7 @@ export default function Contact() {
   return (
     <footer id="contact" ref={ref} className="relative bg-ink pt-28 sm:pt-36">
       <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="font-mono text-[11px] text-accent">(06)</span>
-          <span className="eyebrow text-muted">Beszéljünk</span>
-        </div>
+        <SectionLabel className="mb-6">Beszéljünk</SectionLabel>
 
         <div className="flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between">
           <h2
@@ -119,28 +118,21 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* contact lines */}
-        <div className="mt-16 grid grid-cols-2 gap-10 border-t border-line py-12 sm:grid-cols-4">
+        {/* contact lines — two columns only (phone and socials were dropped).
+            From lg up the sitemap is as wide as the CTA above it (w-48) and
+            pushed to the same right edge, so the two start on one vertical. */}
+        <div className="mt-16 grid grid-cols-2 gap-10 border-t border-line py-12 lg:flex lg:justify-between">
           <div>
             <p className="eyebrow mb-4 text-muted">Email</p>
             <a
-              href="mailto:hello@23media.studio"
+              href="mailto:23@23media.hu"
               className="group inline-block text-[15px] text-bone transition-colors hover:text-accent"
             >
-              hello@23media.studio
+              23@23media.hu
               <span className="block h-px w-0 bg-accent transition-all duration-300 group-hover:w-full" />
             </a>
           </div>
-          <div>
-            <p className="eyebrow mb-4 text-muted">Új megkeresés</p>
-            <a
-              href="tel:+10000000000"
-              className="text-[15px] text-bone transition-colors hover:text-accent"
-            >
-              +1 (000) 23-MEDIA
-            </a>
-          </div>
-          <div>
+          <div className="lg:w-48">
             <p className="eyebrow mb-4 text-muted">Oldaltérkép</p>
             <ul className="space-y-2">
               {SITEMAP.map((l) => (
@@ -151,21 +143,6 @@ export default function Contact() {
                   >
                     {l.label}
                   </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="eyebrow mb-4 text-muted">Közösségi</p>
-            <ul className="space-y-2">
-              {SOCIALS.map((s) => (
-                <li key={s}>
-                  <a
-                    href="#"
-                    className="text-[15px] text-bone-dim transition-colors hover:text-bone"
-                  >
-                    {s}
-                  </a>
                 </li>
               ))}
             </ul>

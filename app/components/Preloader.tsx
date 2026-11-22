@@ -2,7 +2,12 @@
 
 import { useRef, useState } from "react";
 import { gsap, useGSAP } from "../lib/gsap";
-import { isIntroReleased, onIntroReady, releaseIntro } from "../lib/intro";
+import {
+  INTRO_SPEED,
+  isIntroReleased,
+  onIntroReady,
+  releaseIntro,
+} from "../lib/intro";
 
 /**
  * First-load curtain. The brand intro itself is performed by the HeroLockup,
@@ -41,7 +46,7 @@ export default function Preloader() {
       const off = onIntroReady(() => {
         gsap.to(ref.current, {
           autoAlpha: 0,
-          duration: 0.8,
+          duration: 0.8 / INTRO_SPEED,
           ease: "power2.inOut",
           onComplete: () => {
             unlock();

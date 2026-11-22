@@ -22,7 +22,7 @@ export type InquiryState =
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 /** Digits with the usual separators; the digit count is checked separately. */
 const PHONE_RE = /^\+?[\d\s().\/-]+$/;
-const FALLBACK_TO = "hello@23media.studio";
+const FALLBACK_TO = "23@23media.hu";
 
 function str(fd: FormData, key: string, max: number) {
   return String(fd.get(key) ?? "")

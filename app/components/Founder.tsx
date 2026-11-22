@@ -3,56 +3,55 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP } from "../lib/gsap";
-import IndexChip from "./IndexChip";
+import SectionLabel from "./SectionLabel";
+import Signature from "./Signature";
 
-/** Plain copy, or `{ hl }` for the self-awareness phrase that gets the marker. */
-type Part = string | { hl: string };
+/** Plain copy, `{ hl }` for the self-awareness phrase that gets the marker, or
+ *  `{ strong }` for a phrase set in the lead's bone weight mid-paragraph. */
+type Part = string | { hl: string } | { strong: string };
 
 const NAME = "Engi Ádám";
 const ROLES = ["Marketinges", "Közgazdász", "Önismereti mentor"];
-/** Placeholder in the clients' duotone style — swap for the real photo. */
-const PORTRAIT = "/team/engi-adam.svg";
+const PORTRAIT = "/founder.jpg";
 
-// The founder's letter, condensed to its argument: the pain, the answer, the
-// one-score team, the invitation. The phrases are his; only the length changed.
+// The founder's letter, in his own words (client copy, 2026-11-22) and in his
+// order, each sentence used once. Only the typography is ours: the opening
+// hook is set as the display quote, its answer leads the first paragraph, and
+// his invitation closes the letter on the accent rule.
 const LEAD = {
-  before: "Olyan ökoszisztémát alkottam, ahol a vállalkozók időt és ideget spórolnak — és közben ",
-  accent: "végre valaki megérti őket.",
+  before: "Rengeteg vezető szenved a cégépítésben… ",
+  accent: "De mitől szenvednek a legjobban?",
 };
 
 const LETTER: { lead?: string; body: Part[] }[] = [
   {
-    lead: "Rengeteg vezető szenved a cégépítésben.",
+    lead: "Attól, hogy el vannak veszve és semmire nincs idejük.",
     body: [
-      " A hivatásukhoz értenek, a legjobbat adják — mégis attól szenvednek, hogy nincs idejük. Sem a családra, sem feltöltődni, és túl sok folyamat fut, amit senki nem tart egy kézben.",
+      " Nincs idő a családdal lenni és élvezni azt, amit megteremtettek. Túl sok folyamat van a cégükben, ami nincs egy kézben tartva…",
     ],
   },
   {
     body: [
       "Marketingesként, közgazdászként és ",
       { hl: "önismereti mentorként" },
-      " olyan teret hoztunk létre, ahol nem ciki elfáradni, nem gáz hibázni, és szabad megosztani, amit érzel. Őszintén dolgozunk együtt, minden nap egy közös célért.",
+      " olyan teret alkottam meg a csapatom segítségével a vállalkozók számára, ahol időt és ideget spórolhatnak úgy, hogy ",
+      { strong: "végre valaki megérti őket!" },
+      " Itt nem ciki elfáradni, hibázni és megosztani az érzéseket. Őszintén dolgozunk együtt, minden nap egy közös cél érdekében!",
     ],
   },
   {
     body: [
-      "Ehhez összehangolt csapat kell. Itt a marketinges nem köpköd a tartalomgyártóra, a webes nem rakja rá a telefont a hirdetéskezelőre — minden eszközt egy irányba húzunk, hogy a márkád épüljön és a bevételed nőjön.",
+      "Ehhez egy összehangolt csapat kell. Most végre egy olyan csapatot kaphatnak a vállalkozók, ahol minden szakértő egy kottából játszik! A marketinges nem köpköd a tartalomgyártóra… A webes nem rakja rá a telefont a hirdetéskezelőre… Itt minden eszközt egy irányba húzunk!",
     ],
   },
 ];
 
 const CLOSING =
-  "Ha szeretnél egy csapatot, ahol nem kell száz felé rohangálnod, lehetsz őszinte, és közben gyönyörködhetsz a számokban — szívből ajánlom a 23 Media csapatát.";
-
-const GRID = {
-  backgroundImage:
-    "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-  backgroundSize: "40px 40px",
-};
+  "Ha szeretnél egy olyan ökoszisztémát, ahol nem kell száz felé rohangálnod, lehetsz őszinte és közben gyönyörködhetsz a számokban, szívből ajánlom a 23\u00a0Media csapatát!";
 
 /**
- * The founder, alone. The name is set as a masthead that fills the column
- * edge to edge, and his letter to entrepreneurs runs beneath it, signed.
+ * The founder, alone. The section opens on its label; the portrait carries his
+ * three roles beneath it, and his letter to entrepreneurs runs beside, signed.
  */
 export default function Founder() {
   const ref = useRef<HTMLElement>(null);
@@ -63,30 +62,19 @@ export default function Founder() {
       if (!root) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      // --- masthead: the name rises through its mask, the rule draws under
-      // it, then the roles settle in ------------------------------------
-      gsap
-        .timeline({
-          scrollTrigger: { trigger: "[data-f-head]", start: "top 82%", once: true },
-        })
-        .fromTo(
-          "[data-f-name] > span",
-          { yPercent: 110 },
-          { yPercent: 0, duration: 1.5, ease: "power4.out" },
-          0,
-        )
-        .fromTo(
-          "[data-f-rule]",
-          { scaleX: 0 },
-          { scaleX: 1, duration: 1.4, ease: "expo.out", transformOrigin: "0% 50%" },
-          0.55,
-        )
-        .fromTo(
-          "[data-f-role]",
-          { y: 12, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out", stagger: 0.08 },
-          0.85,
-        );
+      // --- roles: settle in under the portrait once the row is reached ------
+      gsap.fromTo(
+        "[data-f-role]",
+        { y: 12, autoAlpha: 0 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          stagger: 0.08,
+          scrollTrigger: { trigger: "[data-f-roles]", start: "top 94%", once: true },
+        },
+      );
 
       // --- portrait: rises in, then drifts with the scroll like the tiles ---
       gsap.from("[data-f-portrait]", {
@@ -135,18 +123,6 @@ export default function Founder() {
           },
         );
       });
-
-      // --- the signature writes itself in, left to right -------------------
-      gsap.fromTo(
-        "[data-f-sign]",
-        { clipPath: "inset(-20% 100% -20% 0)" },
-        {
-          clipPath: "inset(-20% 0% -20% 0)",
-          duration: 1.3,
-          ease: "power2.inOut",
-          scrollTrigger: { trigger: "[data-f-sign]", start: "top 90%" },
-        },
-      );
     },
     { scope: ref },
   );
@@ -157,80 +133,64 @@ export default function Founder() {
       ref={ref}
       className="relative mx-auto max-w-[1600px] px-5 py-28 sm:px-8 sm:py-36"
     >
-      <div className="mb-10 flex items-center gap-3 sm:mb-14">
-        <span className="font-mono text-[11px] text-accent">(05)</span>
-        <span className="eyebrow text-muted">Az alapító</span>
-      </div>
-
-      {/* masthead — sized in container units so the name always fills the column */}
-      <div data-f-head className="[container-type:inline-size]">
-        <h2
-          data-f-name
-          className="reveal-line display -my-[0.12em] whitespace-nowrap py-[0.12em] text-[19.8cqw]"
-          style={{ lineHeight: 1 }}
-        >
-          <span>{NAME}</span>
-        </h2>
-
-        <div className="relative mt-6 h-px sm:mt-8">
-          <span
-            data-f-rule
-            aria-hidden
-            className="absolute inset-0 bg-bone/25 will-change-transform"
-          />
-        </div>
-
-        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
-          <span data-f-role>
-            <IndexChip n="Alapító" on className="uppercase" />
-          </span>
-          {ROLES.map((r, i) => (
-            <span
-              key={r}
-              data-f-role
-              className="flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.18em] text-bone-dim"
-            >
-              {i > 0 && <span aria-hidden className="hidden h-px w-5 bg-bone/20 sm:block" />}
-              {r}
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* the label is the section's whole opener, hence the larger cut */}
+      <SectionLabel as="h2" size="lg" className="mb-10 sm:mb-14">
+        Alapító
+      </SectionLabel>
 
       {/* the letter, with the portrait keeping pace beside it */}
       <div
         data-f-body
-        className="mt-14 grid grid-cols-1 items-start gap-10 lg:mt-24 lg:grid-cols-12 lg:gap-x-10"
+        className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,9fr)_minmax(0,11fr)] lg:gap-x-10"
       >
-        <figure
-          data-f-portrait
-          className="group lg:sticky lg:top-28 lg:col-span-5"
-        >
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-line bg-ink-soft">
+        <figure data-f-portrait className="lg:sticky lg:top-24">
+          {/* while it is pinned, the frame gives up height on short screens so
+              the roles under it stay in view. w-full pins it to the column:
+              left to auto, the max-height would carry through the aspect
+              ratio and narrow the frame, opening a gap beside the letter */}
+          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-line bg-ink-soft lg:max-h-[max(20rem,calc(100svh-9.75rem))]">
             {/* oversized wrapper so the parallax never shows an edge */}
             <div data-f-parallax className="absolute inset-x-0 -inset-y-[6%]">
               <Image
                 src={PORTRAIT}
                 alt={`${NAME} portréja`}
                 fill
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                className="object-cover object-[50%_28%] grayscale transition-[filter,transform] duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04] group-hover:grayscale-0"
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                className="object-cover object-[50%_28%] grayscale"
               />
             </div>
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-[0.07]"
-              style={GRID}
-            />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink/80 to-transparent" />
             <figcaption className="absolute bottom-5 left-5 right-5 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-bone/70">
               <span>{NAME}</span>
               <span className="text-accent">23 Media</span>
             </figcaption>
           </div>
+
+          {/* the rules between the roles drop out where the column is too
+              narrow to hold all three on one line (lg up to xl) */}
+          <div
+            data-f-roles
+            className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
+          >
+            {ROLES.map((r, i) => (
+              <span
+                key={r}
+                data-f-role
+                className="flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.18em] text-bone-dim"
+              >
+                {i > 0 && (
+                  <span
+                    aria-hidden
+                    className="hidden h-px w-5 bg-bone/20 sm:block lg:hidden xl:block"
+                  />
+                )}
+                {r}
+              </span>
+            ))}
+          </div>
         </figure>
 
-        <div className="lg:col-span-7 lg:pl-6 xl:pl-12">
+        <div className="min-w-0">
           <p data-f-fade className="eyebrow text-muted">
             Levél a vállalkozóknak
           </p>
@@ -252,10 +212,14 @@ export default function Founder() {
                 {p.body.map((part, j) =>
                   typeof part === "string" ? (
                     part
-                  ) : (
+                  ) : "hl" in part ? (
                     <mark key={j} className="hl">
                       {part.hl}
                     </mark>
+                  ) : (
+                    <strong key={j} className="font-semibold text-bone">
+                      {part.strong}
+                    </strong>
                   ),
                 )}
               </p>
@@ -264,18 +228,17 @@ export default function Founder() {
 
           <p
             data-f-fade
-            className="serif-italic mt-10 max-w-[34ch] border-l-2 border-accent pl-6 text-[clamp(1.3rem,1.8vw,1.7rem)] leading-[1.25] text-bone lg:mt-12"
+            className="serif-italic mt-10 max-w-[34ch] text-balance border-l-2 border-accent pl-6 text-[clamp(1.3rem,1.8vw,1.7rem)] leading-[1.25] text-bone lg:mt-12"
           >
             {CLOSING}
           </p>
 
+          {/* signed by hand — the scan writes itself in (see Signature) */}
           <div data-f-fade className="mt-12 flex flex-wrap items-end gap-x-6 gap-y-2">
-            <p
-              data-f-sign
-              className="serif-italic text-[clamp(2.4rem,4vw,3.8rem)] leading-none text-bone"
-            >
-              {NAME}
-            </p>
+            <Signature
+              label={`${NAME} aláírása`}
+              className="-mb-2 -ml-1 h-auto w-[clamp(15rem,24vw,22rem)] text-bone"
+            />
             <span className="pb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
               alapító · 23 Media
             </span>

@@ -90,7 +90,14 @@ export default function PersonalBranding() {
       );
 
       // --- copy comes into focus: blur lifts as it rises ----------------------
-      const focus = (targets: string, trigger: string, start: string, blur: number, dist: number, stagger: number) =>
+      const focus = (
+        targets: string,
+        trigger: string,
+        start: string,
+        blur: number,
+        dist: number,
+        stagger: number,
+      ) =>
         gsap.fromTo(
           targets,
           { y: dist, opacity: 0, filter: `blur(${blur}px)` },
@@ -125,18 +132,20 @@ export default function PersonalBranding() {
       );
 
       // the marker strokes draw themselves once the copy is in view
-      gsap.utils.toArray<HTMLElement>(".hl", sectionRef.current).forEach((el) => {
-        gsap.fromTo(
-          el,
-          { "--hl": "0%" },
-          {
-            "--hl": "100%",
-            duration: 0.9,
-            ease: "power2.inOut",
-            scrollTrigger: { trigger: el, start: "top 78%" },
-          },
-        );
-      });
+      gsap.utils
+        .toArray<HTMLElement>(".hl", sectionRef.current)
+        .forEach((el) => {
+          gsap.fromTo(
+            el,
+            { "--hl": "0%" },
+            {
+              "--hl": "100%",
+              duration: 0.9,
+              ease: "power2.inOut",
+              scrollTrigger: { trigger: el, start: "top 78%" },
+            },
+          );
+        });
 
       // ember drifts with the scroll like the hero's flow field
       gsap.fromTo(
@@ -145,19 +154,31 @@ export default function PersonalBranding() {
         {
           yPercent: 18,
           ease: "none",
-          scrollTrigger: { trigger: panel, start: "top bottom", end: "bottom top", scrub: true },
+          scrollTrigger: {
+            trigger: panel,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
         },
       );
 
       // --- tilt: cards lean toward a fine pointer and a sheen follows it.
       // quickTo re-targets from the live value, so a fast cursor never snaps. --
-      if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+        return;
       const offs = cards.map((card) => {
         const sheen = card.querySelector<HTMLElement>("[data-pb-sheen]")!;
         gsap.set(card, { transformPerspective: 1000 });
         gsap.set(sheen, { xPercent: -50, yPercent: -50 });
-        const rx = gsap.quickTo(card, "rotationX", { duration: 0.7, ease: "power3" });
-        const ry = gsap.quickTo(card, "rotationY", { duration: 0.7, ease: "power3" });
+        const rx = gsap.quickTo(card, "rotationX", {
+          duration: 0.7,
+          ease: "power3",
+        });
+        const ry = gsap.quickTo(card, "rotationY", {
+          duration: 0.7,
+          ease: "power3",
+        });
         const sx = gsap.quickTo(sheen, "x", { duration: 0.5, ease: "power3" });
         const sy = gsap.quickTo(sheen, "y", { duration: 0.5, ease: "power3" });
         const onMove = (e: PointerEvent) => {
@@ -218,7 +239,10 @@ export default function PersonalBranding() {
             <span data-pb-line className="block pb-[0.06em]">
               Personal
             </span>
-            <span data-pb-line className="serif-italic block pb-[0.16em] font-normal text-accent">
+            <span
+              data-pb-line
+              className="serif-italic block pb-[0.16em] font-normal text-accent"
+            >
               branding
             </span>
           </h2>
@@ -226,14 +250,14 @@ export default function PersonalBranding() {
           <div data-pb-leads className="flex flex-col gap-4 lg:pb-4">
             <p
               data-pb-lead
-              className="text-[clamp(1.3rem,1.6vw,1.45rem)] leading-[1.3] text-bone"
+              className="serif-italic text-[clamp(1.6rem,2.1vw,1.95rem)] leading-[1.15] text-bone"
             >
               A mai kor egyik legerősebb médiaeszköze a személyes márkaépítés!
             </p>
             <p data-pb-lead className="text-base leading-relaxed text-bone-dim">
-              A 23 Media ökoszisztémája egy teljeskörű szolgáltatás keretében képes
-              megalkotni, megtervezni, kivitelezni és célba juttatni egy personal
-              brandet.
+              A 23 Media ökoszisztémája egy teljeskörű szolgáltatás keretében
+              képes megalkotni, megtervezni, kivitelezni és célba juttatni egy
+              personal brandet.
             </p>
           </div>
         </div>
@@ -285,7 +309,10 @@ export default function PersonalBranding() {
                         part
                       ) : marker ? (
                         // already sitting on the marker — weight carries it
-                        <strong key={part.hl} className="font-semibold text-ink">
+                        <strong
+                          key={part.hl}
+                          className="font-semibold text-ink"
+                        >
                           {part.hl}
                         </strong>
                       ) : (
@@ -306,14 +333,15 @@ export default function PersonalBranding() {
           className="relative mt-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between lg:mt-10"
         >
           <p className="serif-italic max-w-md text-[clamp(1.4rem,1.8vw,1.7rem)] leading-tight text-bone">
-            Hiteles és <span className="text-accent">önazonos</span> kommunikáció.
+            Hiteles és <span className="text-accent">önazonos</span>{" "}
+            kommunikáció.
           </p>
           <Magnetic strength={0.4}>
             <Link
               href="/konzultacio"
               className="group inline-flex items-center gap-3 rounded-full bg-accent px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink outline-none transition-[background-color,transform] duration-100 ease-out hover:bg-bone focus-visible:ring-2 focus-visible:ring-bone focus-visible:ring-offset-2 focus-visible:ring-offset-ink-panel active:scale-[0.97]"
             >
-              Beszéljünk a márkádról
+              Építsünk személyes márkát!
               <span
                 aria-hidden
                 className="inline-block transition-transform duration-300 group-hover:translate-x-1"

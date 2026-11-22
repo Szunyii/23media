@@ -29,6 +29,8 @@ export default function IndexChip({
         // comes out slanted with the shear — a small sheared wipe, like the
         // Personal Branding panel's. Opacity too: Chrome's antialiasing draws
         // a hairline of a fully clipped skewed box.
+        // stamped chips can be wiped on by an entrance (Testimonials)
+        data-chip-fill={on ? "" : undefined}
         className={`absolute inset-0 bg-accent ${
           on
             ? ""
