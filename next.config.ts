@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/*": ["./public/**/*"],
   },
+  // The MCP server card lives next to its endpoint (app/mcp/server-card);
+  // SEP-1649 clients and agent-readiness scanners look for it here.
+  async rewrites() {
+    return [
+      { source: "/.well-known/mcp/server-card.json", destination: "/mcp/server-card" },
+      { source: "/.well-known/mcp.json", destination: "/mcp/server-card" },
+    ];
+  },
 };
 
 export default nextConfig;

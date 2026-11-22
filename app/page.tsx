@@ -10,20 +10,18 @@ import Testimonials from "./components/Testimonials";
 import Stats from "./components/Stats";
 import Founder from "./components/Founder";
 import Contact from "./components/Contact";
+import JsonLd from "./components/JsonLd";
+import { pageGraph } from "./lib/schema";
 import {
-  CONTACT_EMAIL,
   OPEN_GRAPH_BASE,
   SITE_DESCRIPTION,
-  SITE_NAME,
   SITE_SHARE_DESCRIPTION,
-  SITE_SLOGAN,
   SITE_TITLE,
-  SITE_URL,
 } from "./lib/site";
 
 // Title and description come from the layout's defaults.
 export const metadata: Metadata = {
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", types: { "text/markdown": "/index.md" } },
   openGraph: {
     ...OPEN_GRAPH_BASE,
     url: "/",
@@ -32,49 +30,11 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * Structured data for search engines: who runs the site and what it is called
- * (the WebSite name is what Google prints above the result's URL).
- * Only facts the page itself states. Add `telephone`, a postal `address` and
- * `sameAs` (the social profiles) here once the footer carries the real ones.
- */
-const JSON_LD = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: SITE_NAME,
-      alternateName: "23 Media",
-      url: SITE_URL,
-      logo: `${SITE_URL}/icon-512.png`,
-      email: CONTACT_EMAIL,
-      slogan: SITE_SLOGAN,
-      description: SITE_DESCRIPTION,
-      founder: { "@type": "Person", name: "Engi Ádám" },
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${SITE_URL}/#website`,
-      url: SITE_URL,
-      name: SITE_NAME,
-      alternateName: "23 Media",
-      inLanguage: "hu-HU",
-      publisher: { "@id": `${SITE_URL}/#organization` },
-    },
-  ],
-};
-
 export default function Home() {
   return (
     <Providers>
-      <script
-        type="application/ld+json"
-        // "<" escaped so no string in the payload can close the script tag
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(JSON_LD).replace(/</g, "\\u003c"),
-        }}
-      />
+      {/* structured data: who runs the site, what it offers (lib/schema.ts) */}
+      <JsonLd data={pageGraph("home", SITE_DESCRIPTION)} />
       <Nav />
       <main className="relative">
         <Hero />

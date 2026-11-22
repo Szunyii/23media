@@ -4,40 +4,11 @@ import { useRef } from "react";
 import Link from "next/link";
 import { gsap, useGSAP } from "../lib/gsap";
 import Magnetic from "./Magnetic";
+import { PB_PILLARS as PILLARS } from "../lib/content";
 
-/** Plain copy, or `{ hl }` for the self-awareness bits that get the marker. */
-type Part = string | { hl: string };
-
-// Client copy, in the order the work happens: the mentor work runs through
-// everything, the discovery phase precedes content, strategy + scripts follow.
-// The first pillar is the self-awareness one — its whole cell is the marker.
-const PILLARS: { n: string; title: string; desc: Part[] }[] = [
-  {
-    n: "01",
-    title: "Önismeret",
-    desc: [
-      "A munka során ",
-      { hl: "önismereti mentor bevonásával" },
-      " dolgozunk a lelki fejlődésen, és a személyes márkaépítés során felbukkanó elakadásokon.",
-    ],
-  },
-  {
-    n: "02",
-    title: "Feltárás",
-    desc: [
-      "Ügyfeleink számára egy mély, feltáró szakasz előzi meg a tartalomgyártást. Ennek során felkutatjuk a védjegyeket, ",
-      { hl: "a hiteles és önazonos kommunikációt" },
-      " és az üzleti lehetőségeket.",
-    ],
-  },
-  {
-    n: "03",
-    title: "Stratégia és script",
-    desc: [
-      "A márkaépítés során teljeskörű stratégiaalkotással és scriptírással dolgozunk.",
-    ],
-  },
-];
+// Copy: lib/content.ts (PB_PILLARS) — client text, in the order the work
+// happens; the first pillar is the self-awareness one and its whole cell is
+// the marker.
 
 // The bars of the "23" mark are sheared by 0.4 (≈22°); the ember leans with it.
 const SHEAR_DEG = (Math.atan(0.4) * 180) / Math.PI;

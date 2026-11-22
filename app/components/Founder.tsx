@@ -5,49 +5,11 @@ import Image from "next/image";
 import { gsap, useGSAP } from "../lib/gsap";
 import SectionLabel from "./SectionLabel";
 import Signature from "./Signature";
+import { FOUNDER } from "../lib/content";
 
-/** Plain copy, `{ hl }` for the self-awareness phrase that gets the marker, or
- *  `{ strong }` for a phrase set in the lead's bone weight mid-paragraph. */
-type Part = string | { hl: string } | { strong: string };
-
-const NAME = "Engi Ádám";
-const ROLES = ["Marketinges", "Közgazdász", "Önismereti mentor"];
-const PORTRAIT = "/founder.jpg";
-
-// The founder's letter, in his own words (client copy, 2026-11-22) and in his
-// order, each sentence used once. Only the typography is ours: the opening
-// hook is set as the display quote, its answer leads the first paragraph, and
-// his invitation closes the letter on the accent rule.
-const LEAD = {
-  before: "Rengeteg vezető szenved a cégépítésben… ",
-  accent: "De mitől szenvednek a legjobban?",
-};
-
-const LETTER: { lead?: string; body: Part[] }[] = [
-  {
-    lead: "Attól, hogy el vannak veszve és semmire nincs idejük.",
-    body: [
-      " Nincs idő a családdal lenni és élvezni azt, amit megteremtettek. Túl sok folyamat van a cégükben, ami nincs egy kézben tartva…",
-    ],
-  },
-  {
-    body: [
-      "Marketingesként, közgazdászként és ",
-      { hl: "önismereti mentorként" },
-      " olyan teret alkottam meg a csapatom segítségével a vállalkozók számára, ahol időt és ideget spórolhatnak úgy, hogy ",
-      { strong: "végre valaki megérti őket!" },
-      " Itt nem ciki elfáradni, hibázni és megosztani az érzéseket. Őszintén dolgozunk együtt, minden nap egy közös cél érdekében!",
-    ],
-  },
-  {
-    body: [
-      "Ehhez egy összehangolt csapat kell. Most végre egy olyan csapatot kaphatnak a vállalkozók, ahol minden szakértő egy kottából játszik! A marketinges nem köpköd a tartalomgyártóra… A webes nem rakja rá a telefont a hirdetéskezelőre… Itt minden eszközt egy irányba húzunk!",
-    ],
-  },
-];
-
-const CLOSING =
-  "Ha szeretnél egy olyan ökoszisztémát, ahol nem kell száz felé rohangálnod, lehetsz őszinte és közben gyönyörködhetsz a számokban, szívből ajánlom a 23\u00a0Media csapatát!";
+// Copy: lib/content.ts (FOUNDER) — the letter in his own words and order.
+const { name: NAME, roles: ROLES, portrait: PORTRAIT, lead: LEAD, letter: LETTER, closing: CLOSING } =
+  FOUNDER;
 
 /**
  * The founder, alone. The section opens on its label; the portrait carries his

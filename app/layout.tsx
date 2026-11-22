@@ -6,6 +6,7 @@ import {
   Instrument_Serif,
 } from "next/font/google";
 import "./globals.css";
+import WebMcp from "./components/WebMcp";
 import {
   OPEN_GRAPH_BASE,
   SITE_DESCRIPTION,
@@ -87,7 +88,11 @@ export default function RootLayout({
       lang="hu"
       className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${instrument.variable} antialiased`}
     >
-      <body className="bg-ink text-bone">{children}</body>
+      <body className="bg-ink text-bone">
+        {children}
+        {/* in-browser AI agent tools (WebMCP), registered on page load */}
+        <WebMcp />
+      </body>
     </html>
   );
 }

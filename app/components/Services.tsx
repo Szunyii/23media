@@ -3,56 +3,11 @@
 import { useRef, useState } from "react";
 import { gsap, useGSAP } from "../lib/gsap";
 import SectionLabel from "./SectionLabel";
+import { SERVICES, type HlPart } from "../lib/content";
 
-/** Plain copy, or `{ hl }` for the self-awareness bits that get the marker. */
-type Part = string | { hl: string };
-
-const SERVICES: { n: string; title: string; desc: Part[]; items: Part[] }[] = [
-  {
-    n: "01",
-    title: "Márka és arculat",
-    desc: [
-      "Arculatot tervezünk és alkotunk a nulláról, vagy fejlesztünk. Márkát építünk úgy, hogy a kommunikációd azt a hivatást tükrözze, amiért minden nap felkelsz!",
-    ],
-    items: ["Grafikai tervezés", "Branding", "Storyline"],
-  },
-  {
-    n: "02",
-    title: "Web és rendszerfejlesztés",
-    desc: [
-      "Weboldalt építünk vagy fejlesztünk annak érdekében, hogy a sikeres és átütő kommunikáció mögött vásárlás és megtérülés legyen.",
-    ],
-    items: ["Webdesign", "Webfejlesztés", "Programozás", "Rendszeralkotás"],
-  },
-  {
-    n: "03",
-    title: "Tartalomgyártás",
-    desc: [
-      "Brandhez illő tartalmakat alkotunk, tervezéstől a kész megjelenésig. ",
-      { hl: "Szereplést tanítunk, önismereti mentor bevonásával." },
-      " Az eredmény egy önazonos, hiteles kommunikáció, ami mellett nem tud elmenni a célközönséged!",
-    ],
-    items: ["Script írás", "Forgatás", "Vágás", { hl: "Szereplés mentoring" }],
-  },
-  {
-    n: "04",
-    title: "Hirdetés és növekedés",
-    desc: [
-      "Értékesítési tölcsért alkotunk, majd profi PPC kampányt indítunk. KPI felállítás, eredmények és konverzió.",
-    ],
-    items: ["PPC", "Analitika", "Folyamatos növekedés"],
-  },
-  {
-    n: "05",
-    title: "Social management",
-    desc: [
-      "Teljes körű közösségi média kezelést biztosítunk. Posztolunk, interaktálunk a közönségeddel, és olyan oldalstruktúrát állítunk fel, amiben nem akadnak el az érdeklődők!",
-    ],
-    items: ["Stratégia", "Interakció", "Rendszer", "Posztolás"],
-  },
-];
-
-const label = (p: Part) => (typeof p === "string" ? p : p.hl);
+// The copy lives in lib/content.ts (shared with the Markdown / llms.txt / MCP
+// versions of the page).
+const label = (p: HlPart) => (typeof p === "string" ? p : p.hl);
 
 export default function Services() {
   const sectionRef = useRef<HTMLElement>(null);

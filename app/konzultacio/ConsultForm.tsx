@@ -1,28 +1,17 @@
 "use client";
 
-import { useActionState, useRef } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap, useGSAP } from "../lib/gsap";
 import Magnetic from "../components/Magnetic";
 import { sendInquiry, type InquiryFields, type InquiryState } from "./actions";
+import { CONSULT } from "../lib/content";
+import { getModelContext, type AgentSubmitEvent } from "../lib/webmcp";
 
-const STEPS = [
-  {
-    n: "01",
-    t: "24 órán belül válaszolunk",
-    d: "Egy rövid e-mail vagy hívás, hogy mikor érünk rá mindketten.",
-  },
-  {
-    n: "02",
-    t: "30 perces videóhívás",
-    d: "Átnézzük, hol tart a márkád, és mi az a három dolog, ami most a legtöbbet hozná.",
-  },
-  {
-    n: "03",
-    t: "Írásos összefoglaló",
-    d: "Konkrét javaslatokkal, ami akkor is a tiéd, ha végül nem velünk dolgozol!",
-  },
-] as const;
+const STEPS = CONSULT.steps;
+
+/** The form's WebMCP tool name (declarative API — see the <form> attributes). */
+const TOOL_NAME = "request_consultation";
 
 const EMPTY: InquiryFields = {
   lastName: "",
@@ -110,6 +99,66 @@ export default function ConsultForm() {
     { status: "idle" },
   );
   const values = state.status === "error" ? state.fields : EMPTY;
+
+  // WebMCP: an in-browser agent can fill this form as the `request_consultation`
+  // tool; the visitor still presses the button. Two things the attributes
+  // can't do on their own:
+  //  - the honeypot is a form field too, so an agent may fill it and the
+  //    request would be silently dropped — it is cleared whenever an agent
+  //    has filled the form or submits it (capture phase: before React reads
+  //    the FormData);
+  //  - an agent-invoked submit is answered with the outcome of the action
+  //    (bubble phase: after React has taken the event and prevented it).
+  const formRef = useRef<HTMLFormElement>(null);
+  const agentReply = useRef<((result: unknown) => void) | null>(null);
+
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const clearTrap = () => {
+      const trap = form.elements.namedItem("fax");
+      if (trap instanceof HTMLInputElement) trap.value = "";
+    };
+    const beforeReact = (e: Event) => {
+      if (e.target === form && (e as AgentSubmitEvent).agentInvoked) clearTrap();
+    };
+    const afterReact = (e: Event) => {
+      const ev = e as AgentSubmitEvent;
+      if (e.target !== form || !ev.agentInvoked || !e.defaultPrevented) return;
+      if (typeof ev.respondWith !== "function") return;
+      ev.respondWith(
+        new Promise((resolve) => {
+          agentReply.current = resolve;
+        }),
+      );
+    };
+    const onActivated = (e: Event) => {
+      if ((e as Event & { toolName?: string }).toolName === TOOL_NAME) clearTrap();
+    };
+    const mc = getModelContext();
+    window.addEventListener("submit", beforeReact, true);
+    window.addEventListener("submit", afterReact);
+    mc?.addEventListener?.("toolactivated", onActivated);
+    return () => {
+      window.removeEventListener("submit", beforeReact, true);
+      window.removeEventListener("submit", afterReact);
+      mc?.removeEventListener?.("toolactivated", onActivated);
+    };
+  }, [state.status]);
+
+  useEffect(() => {
+    const reply = agentReply.current;
+    if (!reply || state.status === "idle") return;
+    agentReply.current = null;
+    reply(
+      state.status === "ok"
+        ? {
+            status: "sent",
+            message: `A jelentkezés elküldve. A 23media 24 órán belül válaszol a(z) ${state.email} címre, vagy telefonon jelentkezik.`,
+          }
+        : { error: state.message },
+    );
+  }, [state]);
 
   // Entrance: headline lines slide up out of their masks, then the form
   // sentences and side notes fade in one after another.
@@ -242,12 +291,24 @@ export default function ConsultForm() {
             </Link>
           </div>
         ) : (
-          <form action={formAction} className="flex flex-col gap-7 sm:gap-12">
+          <form
+            ref={formRef}
+            action={formAction}
+            toolname={TOOL_NAME}
+            tooldescription="Ingyenes, 30 perces, kötelezettség nélküli konzultáció kérése a 23media média és marketing ügynökségtől. Kitölti a jelentkezési űrlapot a látogató adataival; a beküldést a látogató hagyja jóvá. A 23media 24 órán belül válaszol."
+            className="flex flex-col gap-7 sm:gap-12"
+          >
             {/* honeypot — a field no real visitor sees or fills */}
             <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
               <label>
                 Fax
-                <input type="text" name="fax" tabIndex={-1} autoComplete="off" />
+                <input
+                  type="text"
+                  name="fax"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  toolparamdescription="Spamszűrő mező: mindig hagyd üresen."
+                />
               </label>
             </div>
 
@@ -256,6 +317,7 @@ export default function ConsultForm() {
               <span>Szia,</span>
               <input
                 name="lastName"
+                toolparamdescription="A jelentkező vezetékneve."
                 type="text"
                 required
                 minLength={2}
@@ -267,6 +329,7 @@ export default function ConsultForm() {
               />
               <input
                 name="firstName"
+                toolparamdescription="A jelentkező keresztneve."
                 type="text"
                 required
                 minLength={2}
@@ -284,6 +347,7 @@ export default function ConsultForm() {
               <span>Elérsz itt:</span>
               <input
                 name="email"
+                toolparamdescription="E-mail cím, ahová a 23media válaszol."
                 type="email"
                 required
                 autoComplete="email"
@@ -301,6 +365,7 @@ export default function ConsultForm() {
               <span className={OPTIONAL_FIELD}>
                 <input
                   name="company"
+                toolparamdescription="Cégnév — nem kötelező (personal brandnél lehet, hogy nincs)."
                   type="text"
                   autoComplete="organization"
                   placeholder="cégnév"
@@ -317,6 +382,7 @@ export default function ConsultForm() {
               <span>Hívhatsz itt:</span>
               <input
                 name="phone"
+                toolparamdescription="Telefonszám előhívóval, például +36 30 123 4567."
                 type="tel"
                 required
                 autoComplete="tel"
@@ -336,6 +402,7 @@ export default function ConsultForm() {
               <textarea
                 id="consult-occupation"
                 name="occupation"
+                toolparamdescription="Pár szóban: mivel foglalkozik a jelentkező és kiknek (legfeljebb 300 karakter)."
                 required
                 minLength={2}
                 rows={2}
@@ -353,6 +420,7 @@ export default function ConsultForm() {
               <span className={OPTIONAL_FIELD}>
                 <input
                   name="website"
+                toolparamdescription="A jelentkező weboldalának címe — nem kötelező."
                   type="text"
                   autoComplete="url"
                   inputMode="url"
@@ -394,7 +462,14 @@ export default function ConsultForm() {
                   </button>
                 </Magnetic>
                 <p className="max-w-xs font-mono text-[10px] uppercase leading-relaxed tracking-[0.2em] text-muted">
-                  Az adataidat csak a megkeresés kezelésére használjuk.
+                  Az adataidat csak a megkeresés kezelésére használjuk.{" "}
+                  <Link
+                    href="/adatvedelem"
+                    rel="privacy-policy"
+                    className="text-bone-dim underline decoration-accent/60 underline-offset-2 transition-colors hover:text-accent"
+                  >
+                    Adatkezelés
+                  </Link>
                 </p>
               </div>
 

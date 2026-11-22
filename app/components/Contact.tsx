@@ -6,6 +6,8 @@ import { gsap, useGSAP } from "../lib/gsap";
 import Magnetic from "./Magnetic";
 import { scrollToSection } from "../lib/sections";
 import SectionLabel from "./SectionLabel";
+import { ABOUT_LINKS, LEGAL_LINKS } from "./SiteLinks";
+import { PAGES } from "../lib/site";
 
 const SITEMAP = [
   { id: "services", label: "Szolgáltatások" },
@@ -118,9 +120,11 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* contact lines — two columns only (phone and socials were dropped).
-            From lg up the sitemap is as wide as the CTA above it (w-48) and
-            pushed to the same right edge, so the two start on one vertical. */}
+        {/* contact lines (phone and socials were dropped — the client publishes
+            neither). From lg up the sitemap is as wide as the CTA above it
+            (w-48) and pushed to the same right edge, so the two start on one
+            vertical; the legal links sit between. On phones e-mail and the
+            sitemap share the first row, the legal links take the second. */}
         <div className="mt-16 grid grid-cols-2 gap-10 border-t border-line py-12 lg:flex lg:justify-between">
           <div>
             <p className="eyebrow mb-4 text-muted">Email</p>
@@ -131,6 +135,22 @@ export default function Contact() {
               23@23media.hu
               <span className="block h-px w-0 bg-accent transition-all duration-300 group-hover:w-full" />
             </a>
+          </div>
+          <div className="order-last col-span-2 lg:order-none lg:col-span-1">
+            <p className="eyebrow mb-4 text-muted">Jogi információk</p>
+            <ul className="space-y-2">
+              {LEGAL_LINKS.map((l) => (
+                <li key={l.key}>
+                  <Link
+                    href={PAGES[l.key].path}
+                    rel={l.rel}
+                    className="text-[15px] text-bone-dim transition-colors hover:text-bone"
+                  >
+                    {PAGES[l.key].title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="lg:w-48">
             <p className="eyebrow mb-4 text-muted">Oldaltérkép</p>
@@ -143,6 +163,17 @@ export default function Contact() {
                   >
                     {l.label}
                   </button>
+                </li>
+              ))}
+              {ABOUT_LINKS.map((l) => (
+                <li key={l.key}>
+                  <Link
+                    href={PAGES[l.key].path}
+                    rel={l.rel}
+                    className="text-[15px] text-bone-dim transition-colors hover:text-bone"
+                  >
+                    {PAGES[l.key].title}
+                  </Link>
                 </li>
               ))}
             </ul>

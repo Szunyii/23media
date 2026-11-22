@@ -3,23 +3,14 @@ import Link from "next/link";
 import Providers from "../components/Providers";
 import Logo from "../components/Logo";
 import ConsultForm from "./ConsultForm";
-import { OPEN_GRAPH_BASE, SITE_NAME } from "../lib/site";
+import JsonLd from "../components/JsonLd";
+import { SubpageFooter } from "../components/SiteLinks";
+import { CONSULT } from "../lib/content";
+import { pageMetadata } from "../lib/meta";
+import { pageGraph } from "../lib/schema";
 
-const TITLE = "Ingyenes konzultáció";
-const DESCRIPTION =
-  "30 perces, kötelezettség nélküli hívás: átnézzük, hol tart a márkád, és három konkrét lépést adunk, amit már holnap megléphetsz.";
-
-export const metadata: Metadata = {
-  title: TITLE, // the layout's template appends " — 23media"
-  description: DESCRIPTION,
-  alternates: { canonical: "/konzultacio" },
-  openGraph: {
-    ...OPEN_GRAPH_BASE,
-    url: "/konzultacio",
-    title: `${TITLE} — ${SITE_NAME}`,
-    description: DESCRIPTION,
-  },
-};
+// the layout's template appends " — 23media" to the title
+export const metadata: Metadata = pageMetadata("consultation", CONSULT.description, CONSULT.title);
 
 export default function KonzultacioPage() {
   return (
@@ -42,9 +33,11 @@ export default function KonzultacioPage() {
         </div>
       </header>
 
+      <JsonLd data={pageGraph("consultation", CONSULT.description)} />
       <main className="relative">
         <ConsultForm />
       </main>
+      <SubpageFooter />
     </Providers>
   );
 }

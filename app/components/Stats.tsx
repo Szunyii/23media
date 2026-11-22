@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import SectionLabel from "./SectionLabel";
+import { STATS } from "../lib/content";
 
 /**
  * Every figure is a row of small 3D drums, one per digit, built on the prism
@@ -14,19 +15,8 @@ import SectionLabel from "./SectionLabel";
  * stays lit while the drums turn, then slides off to leave the rule; the label
  * rises out of a mask underneath. Cells that scroll into view together run one
  * after another; a cell that arrives alone runs at once.
+ * The figures themselves live in lib/content.ts (STATS).
  */
-type Stat = {
-  value: string;
-  label: string;
-  /** render an accent "+" after the figure */
-  plus?: boolean;
-};
-
-const STATS: Stat[] = [
-  { value: "20", plus: true, label: "Aktív ügyfél" },
-  { value: "2300", plus: true, label: "Legyártott videó" },
-  { value: "12", label: "Fős csapat" },
-];
 
 /** A cell starts once its rule has climbed to 70% of the viewport height, so
  *  the whole figure and its label are in view while it plays. */
