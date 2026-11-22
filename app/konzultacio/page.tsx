@@ -3,11 +3,22 @@ import Link from "next/link";
 import Providers from "../components/Providers";
 import Logo from "../components/Logo";
 import ConsultForm from "./ConsultForm";
+import { OPEN_GRAPH_BASE, SITE_NAME } from "../lib/site";
+
+const TITLE = "Ingyenes konzultáció";
+const DESCRIPTION =
+  "30 perces, kötelezettség nélküli hívás: átnézzük, hol tart a márkád, és három konkrét lépést adunk, amit már holnap megléphetsz.";
 
 export const metadata: Metadata = {
-  title: "Ingyenes konzultáció — 23media",
-  description:
-    "30 perces, kötelezettség nélküli hívás: átnézzük, hol tart a márkád, és három konkrét lépést adunk, amit már holnap megléphetsz.",
+  title: TITLE, // the layout's template appends " — 23media"
+  description: DESCRIPTION,
+  alternates: { canonical: "/konzultacio" },
+  openGraph: {
+    ...OPEN_GRAPH_BASE,
+    url: "/konzultacio",
+    title: `${TITLE} — ${SITE_NAME}`,
+    description: DESCRIPTION,
+  },
 };
 
 export default function KonzultacioPage() {

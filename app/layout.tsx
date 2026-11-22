@@ -6,6 +6,14 @@ import {
   Instrument_Serif,
 } from "next/font/google";
 import "./globals.css";
+import {
+  OPEN_GRAPH_BASE,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_SHARE_DESCRIPTION,
+  SITE_TITLE,
+  SITE_URL,
+} from "./lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,16 +39,36 @@ const instrument = Instrument_Serif({
   display: "swap",
 });
 
+// Site-wide defaults. Two things are deliberately left to each page, because
+// a page inherits them unchanged if it doesn't set its own:
+//  - `alternates.canonical` — a canonical here would declare every route a
+//    duplicate of the home page;
+//  - `openGraph.url` (and a page-specific og title/description) — see
+//    OPEN_GRAPH_BASE.
+// The preview image comes from the opengraph-image files, not from here.
 export const metadata: Metadata = {
-  title: "23MEDIA — Márkák, amik megmozgatnak.",
-  description:
-    "A 23media egy teljes körű kreatívstúdió, amely olyan márkákat, weboldalakat, tartalmakat és növekedési kampányokat épít, amik megmozgatják a kultúrát és a fontos mutatókat.",
-  metadataBase: new URL("https://23media.studio"),
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_TITLE, template: `%s — ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   openGraph: {
-    title: "23media — Márkák, amik megmozgatnak.",
-    description:
-      "Teljes körű kreatívstúdió. Márka · Web · Tartalom · Hirdetés · Közösségi média.",
-    type: "website",
+    ...OPEN_GRAPH_BASE,
+    title: SITE_TITLE,
+    description: SITE_SHARE_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
