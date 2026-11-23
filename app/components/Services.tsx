@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { gsap, useGSAP } from "../lib/gsap";
 import SectionLabel from "./SectionLabel";
 import { SERVICES, type HlPart } from "../lib/content";
+import { MARK_SHEAR } from "../lib/mark";
 
 // The copy lives in lib/content.ts (shared with the Markdown / llms.txt / MCP
 // versions of the page).
@@ -295,15 +296,26 @@ export default function Services() {
                 {s.n}
               </div>
 
-              <div className="relative flex items-center justify-between">
-                <span className="font-mono text-[11px] tracking-[0.2em] text-accent">
-                  {s.n}
-                </span>
-                <span
-                  className={`h-2 w-2 rounded-full transition-colors duration-500 ${
-                    i === active ? "bg-accent" : "bg-bone/20"
-                  }`}
-                />
+              {/* position meter: one sheared bar per service (the "23" mark's
+                  slant), filled up to this card; lights up bar by bar when
+                  the card takes the stage */}
+              <div aria-hidden className="relative flex items-center gap-1.25 pl-1">
+                {SERVICES.map((_, j) => (
+                  <span
+                    key={j}
+                    className={`h-3.5 w-2 border transition-colors duration-500 ${
+                      j > i
+                        ? "border-bone/15"
+                        : i === active
+                          ? "border-transparent bg-accent"
+                          : "border-transparent bg-bone/25"
+                    }`}
+                    style={{
+                      transform: MARK_SHEAR,
+                      transitionDelay: i === active ? `${j * 70}ms` : "0ms",
+                    }}
+                  />
+                ))}
               </div>
 
               <div className="relative">
