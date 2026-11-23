@@ -8,8 +8,11 @@ import Magnetic from "./Magnetic";
 import { scrollToSection } from "../lib/sections";
 import { INTRO_SPEED, onIntroReady } from "../lib/intro";
 
+// Page order. Personal Branding is the flagship offer, so it gets a soft
+// accent pill instead of the plain mono link.
 const LINKS = [
   { id: "services", label: "Szolgáltatások" },
+  { id: "personal-branding", label: "Personal Branding", featured: true },
   { id: "work", label: "Referenciák" },
   { id: "founder", label: "Alapító" },
 ];
@@ -99,7 +102,7 @@ export default function Nav() {
       <div
         className={`relative mx-auto flex items-center justify-between transition-[max-width,padding] duration-500 ${
           scrolled
-            ? "max-w-215 px-4 py-2.5 sm:px-6"
+            ? "max-w-240 px-4 py-2.5 sm:px-6"
             : "max-w-400 px-5 py-5 sm:px-8"
         }`}
       >
@@ -121,20 +124,30 @@ export default function Nav() {
         />
 
         <nav
-          className={`hidden items-center transition-[gap] duration-500 md:flex ${
+          className={`hidden items-center transition-[gap] duration-500 lg:flex ${
             scrolled ? "gap-7" : "gap-9"
           }`}
         >
-          {LINKS.map((l) => (
-            <button
-              key={l.id}
-              onClick={() => scrollToSection(l.id)}
-              className="group relative font-mono text-[11px] uppercase tracking-[0.18em] text-bone-dim transition-colors hover:text-bone"
-            >
-              {l.label}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent transition-all duration-300 group-hover:w-full" />
-            </button>
-          ))}
+          {LINKS.map((l) =>
+            l.featured ? (
+              <button
+                key={l.id}
+                onClick={() => scrollToSection(l.id)}
+                className="-mx-1 rounded-full border border-accent/35 bg-accent/[0.07] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent transition-colors duration-300 hover:border-accent/80 hover:bg-accent/15"
+              >
+                {l.label}
+              </button>
+            ) : (
+              <button
+                key={l.id}
+                onClick={() => scrollToSection(l.id)}
+                className="group relative font-mono text-[11px] uppercase tracking-[0.18em] text-bone-dim transition-colors hover:text-bone"
+              >
+                {l.label}
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent transition-all duration-300 group-hover:w-full" />
+              </button>
+            ),
+          )}
         </nav>
 
         <Magnetic strength={0.35}>
