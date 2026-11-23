@@ -9,8 +9,11 @@ import { CONSULT } from "../lib/content";
 import { pageMetadata } from "../lib/meta";
 import { pageGraph } from "../lib/schema";
 
-// the layout's template appends " — 23media" to the title
-export const metadata: Metadata = pageMetadata("consultation", CONSULT.description, CONSULT.title);
+// the layout's template appends " — 23media" to the title; the preview card is
+// this folder's own opengraph-image
+export const metadata: Metadata = pageMetadata("consultation", CONSULT.description, CONSULT.title, {
+  ownImage: true,
+});
 
 export default function KonzultacioPage() {
   return (

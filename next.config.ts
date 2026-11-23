@@ -9,6 +9,19 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/*": ["./public/**/*"],
   },
+  // One host for the whole site: www.23media.hu answers too (Hostinger serves
+  // both), so send it to the apex the canonical URLs, sitemap and og:url use.
+  // 308 = permanent; search engines treat it like a 301.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.23media.hu" }],
+        destination: "https://23media.hu/:path*",
+        permanent: true,
+      },
+    ];
+  },
   // The MCP server card lives next to its endpoint (app/mcp/server-card);
   // SEP-1649 clients and agent-readiness scanners look for it here.
   async rewrites() {

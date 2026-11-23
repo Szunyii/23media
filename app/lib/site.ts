@@ -89,3 +89,20 @@ export const OPEN_GRAPH_BASE = {
   locale: "hu_HU",
   type: "website",
 } as const;
+
+/** Alt text of the shared preview card (app/opengraph-image.tsx). */
+export const OG_IMAGE_ALT = `23media — média és marketing ügynökség. ${SITE_SLOGAN}`;
+
+/**
+ * The shared preview card, as config metadata. A file-based opengraph-image
+ * only fills the image of its own segment: a page below it that sets
+ * `openGraph` replaces the layout's object, image included, and Next puts no
+ * image back — so pageMetadata (lib/meta.ts) adds this one explicitly.
+ */
+export const DEFAULT_OG_IMAGE = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  type: "image/png",
+  alt: OG_IMAGE_ALT,
+} as const;
