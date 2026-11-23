@@ -20,15 +20,23 @@ import SectionLabel from "./SectionLabel";
  * quote stands whole there — and not every tile on the wall wears the toggle.
  */
 const LONG = { personal: 420, company: 280 };
-/** …to this many lines. `COLLAPSED` is LINES × the quote's line-height. */
-const LINES = 4;
+/**
+ * …to `--lines` lines: six on a phone, where a line holds half as many words
+ * and four of them said next to nothing, four from `sm` up. The collapsed
+ * class and the fold's tween both read the variable, so they cannot drift.
+ */
+const FOLD = "[--lines:6] sm:[--lines:4]";
 const LEADING = 1.55;
-const COLLAPSED = "h-[6.2em] [--fade:3rem]";
+/** One line of the quote (LEADING, in em) — also the depth of the fold's fade. */
+const LINE = "1.55em";
+// written out in full: Tailwind only picks up class names it can read as text
+const COLLAPSED = "h-[calc(var(--lines)*1.55em)] [--fade:1.55em]";
 /**
  * The fold's fade-out is a mask on the text itself, not a tile-coloured cover
  * painted over it, so the cursor light shows through the faded lines.
  * `--fade` is the mask's height: the collapsed class sets it, GSAP tweens it
- * inline with the fold.
+ * inline with the fold. It takes only the last line — a deeper fade left two
+ * of the four lines too faint to read.
  */
 const FADE_MASK =
   "[mask-image:linear-gradient(to_bottom,#000_calc(100%_-_var(--fade,0px)),transparent_100%)]";
@@ -273,9 +281,11 @@ function Wall({ children }: { children: ReactNode }) {
           // the wall ends in one line (the few px between the columns are
           // taken up by their last tiles): the invite gets the row to itself
           for (let c = 0; c < cols; c++) {
-            const last = slots.findLast(
-              (s) => c >= s.col && c < s.col + s.span,
-            );
+            // (a plain filter, not `findLast`: this branch is the one every
+            // phone takes, and older ones don't have that method)
+            const last = slots
+              .filter((s) => c >= s.col && c < s.col + s.span)
+              .pop();
             if (!last || tops[c] === foot) continue;
             last.el.style.minHeight = `${last.el.offsetHeight + foot - tops[c]}px`;
             tops.fill(foot, last.col, last.col + last.span);
@@ -451,7 +461,7 @@ function Visual({ t, personal }: { t: Testimonial; personal: boolean }) {
   );
 }
 
-/** The testimonial text. Long ones start folded to `LINES` lines; GSAP animates the fold. */
+/** The testimonial text. Long ones start folded to `--lines` lines; GSAP animates the fold. */
 function Quote({ text, personal }: { text: string; personal: boolean }) {
   const id = useId();
   const long = text.length > (personal ? LONG.personal : LONG.company);
@@ -465,15 +475,17 @@ function Quote({ text, personal }: { text: string; personal: boolean }) {
     setOpen(next);
     // React only swaps the collapsed class; the inline height GSAP writes wins
     // during the tween and is cleared at the end so the class rules again.
-    const line = parseFloat(getComputedStyle(box).fontSize) * LEADING;
+    const cs = getComputedStyle(box);
+    const line = parseFloat(cs.fontSize) * LEADING;
+    const lines = parseFloat(cs.getPropertyValue("--lines")) || 4;
     const restack = () =>
       box.dispatchEvent(new Event(RESTACK, { bubbles: true }));
     gsap.fromTo(
       box,
-      { height: box.offsetHeight, "--fade": next ? "3rem" : "0rem" },
+      { height: box.offsetHeight, "--fade": next ? LINE : "0em" },
       {
-        height: next ? "auto" : line * LINES,
-        "--fade": next ? "0rem" : "3rem",
+        height: next ? "auto" : line * lines,
+        "--fade": next ? "0em" : LINE,
         duration: reduced() ? 0 : 0.8,
         ease: "expo.out",
         overwrite: true,
@@ -495,11 +507,15 @@ function Quote({ text, personal }: { text: string; personal: boolean }) {
         <blockquote
           id={id}
           ref={boxRef}
+          // phones: the company quote a touch larger and brighter — it is the
+          // tile's whole point, and grey 15 px on the dark card read faint
           className={`overflow-hidden leading-[1.55] ${
             personal
               ? "serif-italic text-[clamp(1.1rem,1.3vw,1.3rem)] text-bone"
-              : "text-[15px] text-bone-dim"
-          } ${long ? FADE_MASK : ""} ${long && !open ? COLLAPSED : ""}`}
+              : "text-[15.5px] text-bone/85 sm:text-[15px] sm:text-bone-dim"
+          } ${long ? `${FOLD} ${FADE_MASK}` : ""} ${
+            long && !open ? COLLAPSED : ""
+          }`}
         >
           „{text}”
         </blockquote>
@@ -511,11 +527,12 @@ function Quote({ text, personal }: { text: string; personal: boolean }) {
           aria-expanded={open}
           aria-controls={id}
           onClick={toggle}
-          className="group/more mt-4 inline-flex cursor-pointer items-center gap-2.5 self-start font-mono text-[10px] uppercase tracking-[0.18em] text-accent outline-none"
+          // phones: a 44 px tap target with a larger ring and label
+          className="press group/more mt-2 inline-flex min-h-11 cursor-pointer items-center gap-3 self-start font-mono text-[11px] uppercase tracking-[0.18em] text-accent outline-none sm:mt-4 sm:min-h-0 sm:gap-2.5 sm:text-[10px]"
         >
           <span
             aria-hidden
-            className={`grid h-6 w-6 place-items-center rounded-full border border-accent/50 transition-[transform,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/more:bg-accent group-hover/more:text-ink group-focus-visible/more:bg-accent group-focus-visible/more:text-ink ${
+            className={`grid h-8 w-8 place-items-center rounded-full border border-accent/50 sm:h-6 sm:w-6 transition-[transform,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/more:bg-accent group-hover/more:text-ink group-focus-visible/more:bg-accent group-focus-visible/more:text-ink ${
               open ? "rotate-45" : ""
             }`}
           >
@@ -696,7 +713,7 @@ function Tile({
                 href={t.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group/link inline-flex items-center gap-2 rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] outline-none transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-ink focus-visible:border-accent ${
+                className={`press group/link inline-flex items-center gap-2 rounded-full border px-4 py-3 font-mono text-[10px] uppercase tracking-[0.14em] outline-none transition-colors duration-300 sm:py-2 hover:border-accent hover:bg-accent hover:text-ink focus-visible:border-accent ${
                   personal
                     ? "border-accent/40 text-bone"
                     : "border-bone/20 text-bone"
@@ -730,14 +747,17 @@ function Legend({
   onFocus: (kind?: Kind) => void;
 }) {
   return (
-    <div data-legend className="relative pb-6">
+    <div data-legend className="relative pb-5 sm:pb-6">
       <span
         data-g-rule
         aria-hidden
         className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-accent/60 via-line to-line"
       />
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <ul className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-10">
+      {/* phones: the two keys side by side and the count under them — with
+          the serif taglines stacked in as well, the legend was five ragged
+          lines pushing the first tile off the screen */}
+      <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <ul className="flex flex-wrap items-center gap-2 sm:gap-x-10 sm:gap-y-3">
           {keys.map((k) => (
             <li
               key={k.id}
@@ -747,7 +767,7 @@ function Legend({
               className="flex flex-wrap items-center gap-x-4 gap-y-2"
             >
               <span
-                className={`inline-flex items-center gap-2.5 rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] ${
+                className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] sm:gap-2.5 sm:px-4 sm:tracking-[0.22em] ${
                   k.id === "personal"
                     ? "bg-accent text-ink"
                     : "border border-line text-bone-dim"
@@ -760,7 +780,7 @@ function Legend({
                   {String(k.count).padStart(2, "0")}
                 </span>
               </span>
-              <span className="serif-italic text-[clamp(1.1rem,1.45vw,1.4rem)] leading-tight text-bone">
+              <span className="serif-italic hidden text-[clamp(1.1rem,1.45vw,1.4rem)] leading-tight text-bone sm:inline">
                 {k.tagline}
               </span>
             </li>
@@ -975,7 +995,7 @@ export default function Testimonials() {
       ref={ref}
       className="relative mx-auto max-w-[1600px] px-5 py-28 sm:px-8 sm:py-36"
     >
-      <div className="mb-14">
+      <div className="mb-10 sm:mb-14">
         <SectionLabel className="mb-4">Ügyfeleink írták</SectionLabel>
         <h2 className="display max-w-[16ch] text-[clamp(2.2rem,5vw,4.4rem)] leading-[1]">
           POV:{" "}

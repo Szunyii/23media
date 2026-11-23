@@ -93,7 +93,7 @@ export default function Founder() {
     <section
       id="founder"
       ref={ref}
-      className="relative mx-auto max-w-[1600px] px-5 py-28 sm:px-8 sm:py-36"
+      className="relative mx-auto max-w-[1600px] px-5 pb-20 pt-28 sm:px-8 sm:py-36"
     >
       {/* the label is the section's whole opener, hence the larger cut */}
       <SectionLabel as="h2" size="lg" className="mb-10 sm:mb-14">

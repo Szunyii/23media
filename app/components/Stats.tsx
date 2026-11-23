@@ -215,9 +215,16 @@ export default function Stats() {
       <div className="pointer-events-none absolute -left-1/4 top-0 h-full w-1/2 bg-[radial-gradient(circle,_#f5c518_0%,_transparent_60%)] opacity-[0.07]" />
       <div className="relative mx-auto max-w-[1600px] px-5 sm:px-8">
         <SectionLabel className="mb-14">Számokban</SectionLabel>
-        <div className="grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-3">
+        {/* phones: each figure and its label share one line, the label set
+            against the right edge on the figure's baseline — a ledger row,
+            where figure-over-label left the right half of the screen empty */}
+        <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-3 sm:gap-y-12">
           {STATS.map((s) => (
-            <div key={s.label} data-stat className="relative pt-5">
+            <div
+              key={s.label}
+              data-stat
+              className="relative pt-6 max-sm:flex max-sm:items-baseline max-sm:justify-between max-sm:gap-6 sm:pt-5"
+            >
               {/* the rule, and the accent line that draws it in */}
               <span
                 aria-hidden
@@ -229,7 +236,7 @@ export default function Stats() {
                   className="absolute inset-0 bg-accent opacity-0"
                 />
               </span>
-              <div className="display text-[clamp(3rem,6.6vw,7rem)] leading-none tracking-tight">
+              <div className="display shrink-0 text-[clamp(3rem,6.6vw,7rem)] leading-none tracking-tight">
                 <span className="sr-only">
                   {s.value}
                   {s.plus && "+"}
@@ -250,7 +257,7 @@ export default function Stats() {
               {/* the label carries real weight: same family as the figure,
                   a full step up from the mono eyebrows, in bone. It rises out
                   of a mask; the padding keeps the g/y descenders inside it. */}
-              <p className="-mb-[0.15em] mt-4 overflow-hidden font-display text-[clamp(1.1rem,1.5vw,1.45rem)] font-medium leading-tight tracking-[-0.01em] text-bone">
+              <p className="-mb-[0.15em] mt-4 overflow-hidden font-display text-[clamp(1.1rem,1.5vw,1.45rem)] font-medium leading-tight tracking-[-0.01em] text-bone max-sm:mt-0 max-sm:text-right">
                 <span data-label className="block pb-[0.15em]">
                   {s.label}
                 </span>

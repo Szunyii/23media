@@ -252,7 +252,9 @@ export default function Services() {
           </SectionLabel>
           <h2
             data-reveal
-            className="display text-[clamp(2.4rem,5vw,4.6rem)] leading-[0.98]"
+            // phones: the longest line ("az átütő kommunikációhoz," — 8.9em)
+            // has to clear the gutters, so the size follows the width there
+            className="display text-[clamp(1.9rem,9.7vw,2.4rem)] leading-[0.98] sm:text-[clamp(2.4rem,5vw,4.6rem)]"
           >
             Minden, ami kell
             <br />
@@ -391,7 +393,7 @@ export default function Services() {
                 aria-label={
                   dir < 0 ? "Előző szolgáltatás" : "Következő szolgáltatás"
                 }
-                className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-line text-bone outline-none transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-ink focus-visible:border-accent disabled:cursor-default disabled:opacity-30 disabled:hover:border-line disabled:hover:bg-transparent disabled:hover:text-bone"
+                className="press flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-line text-bone outline-none transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-ink focus-visible:border-accent disabled:cursor-default disabled:opacity-30 disabled:hover:border-line disabled:hover:bg-transparent disabled:hover:text-bone"
               >
                 <svg
                   width="16"

@@ -21,7 +21,7 @@ function RotatingCTA() {
           other CTA on the page; the e-mail address stays in the list below */}
       <Link
         href="/konzultacio"
-        className="group relative grid h-40 w-40 place-items-center rounded-full bg-accent text-ink transition-transform duration-500 hover:scale-105 sm:h-48 sm:w-48"
+        className="group relative grid h-40 w-40 place-items-center rounded-full bg-accent text-ink transition-transform duration-500 hover:scale-105 active:scale-[0.96] active:duration-150 sm:h-48 sm:w-48"
         aria-label="Ingyenes konzultáció kérése"
       >
         <svg
@@ -83,7 +83,7 @@ export default function Contact() {
   );
 
   return (
-    <footer id="contact" ref={ref} className="relative bg-ink pt-28 sm:pt-36">
+    <footer id="contact" ref={ref} className="relative bg-ink pt-20 sm:pt-36">
       <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
         <SectionLabel className="mb-6">Beszéljünk</SectionLabel>
 
@@ -181,13 +181,17 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* giant wordmark */}
-      <div className="overflow-hidden px-5 sm:px-8">
-        <div
-          data-wordmark
-          className="display select-none bg-gradient-to-r from-bone via-bone to-accent bg-[length:200%_100%] bg-clip-text pb-4 text-center text-[23vw] leading-[0.8] text-transparent"
-        >
-          23media
+      {/* giant wordmark — sized from its own box (24cqw: the word is 4.11em
+          wide, so it fills 98.5% of the row at any gutter), where a vw size
+          ran past the padding and lost its last letter on phones */}
+      <div className="px-5 sm:px-8">
+        <div className="@container overflow-hidden">
+          <div
+            data-wordmark
+            className="display select-none bg-gradient-to-r from-bone via-bone to-accent bg-[length:200%_100%] bg-clip-text pb-4 text-center text-[24cqw] leading-[0.8] text-transparent"
+          >
+            23media
+          </div>
         </div>
       </div>
 

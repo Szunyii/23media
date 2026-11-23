@@ -82,8 +82,10 @@ export default function Hero() {
           data-hero-eyebrow
           className="flex translate-y-4 items-center gap-3 opacity-0"
         >
-          <span className="h-px w-10 bg-accent" />
-          <span className="eyebrow text-bone-dim">
+          <span className="h-px w-10 shrink-0 bg-accent max-[380px]:w-6" />
+          {/* one line down to 360 px: tighter tracking on the narrowest phones
+              (`!` because the unlayered .eyebrow rule outranks utilities) */}
+          <span className="eyebrow text-bone-dim max-[380px]:tracking-[0.2em]!">
             Média <span className="normal-case">és</span> marketing ügynökség
           </span>
         </div>
@@ -107,14 +109,16 @@ export default function Hero() {
             Tervezéstől a kivitelezésig, egy kézben!
           </p>
 
+          {/* phones: two full-width rows, the arrow at the far edge — a pair of
+              pills of different widths stacked on the left read as leftovers */}
           <div
             data-hero-fade
-            className="flex translate-y-4 flex-wrap items-center gap-4 opacity-0"
+            className="flex translate-y-4 flex-col gap-3 opacity-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
           >
             <Magnetic strength={0.4}>
               <Link
                 href="/konzultacio"
-                className="group inline-flex items-center gap-3 rounded-full bg-accent px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-bone"
+                className="press group flex items-center justify-between gap-3 rounded-full bg-accent px-7 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-bone sm:inline-flex sm:justify-start sm:py-3.5"
               >
                 Ingyenes konzultáció
                 <span
@@ -128,7 +132,7 @@ export default function Hero() {
             <Magnetic strength={0.3}>
               <button
                 onClick={() => scrollToSection("work")}
-                className="rounded-full border border-bone/20 px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.18em] text-bone transition-colors hover:border-bone"
+                className="press w-full rounded-full border border-bone/20 px-7 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-bone transition-colors hover:border-bone sm:w-auto sm:py-3.5"
               >
                 Referenciák
               </button>

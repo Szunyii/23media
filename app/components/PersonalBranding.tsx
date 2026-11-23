@@ -310,7 +310,9 @@ export default function PersonalBranding() {
           <Magnetic strength={0.4}>
             <Link
               href="/konzultacio"
-              className="group inline-flex items-center gap-3 rounded-full bg-accent px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink outline-none transition-[background-color,transform] duration-100 ease-out hover:bg-bone focus-visible:ring-2 focus-visible:ring-bone focus-visible:ring-offset-2 focus-visible:ring-offset-ink-panel active:scale-[0.97]"
+              // phones: full width, arrow at the far edge; the tracking and
+              // padding give way below 400 px so the label keeps to one line
+              className="group flex items-center justify-between gap-3 rounded-full bg-accent px-7 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-ink outline-none transition-[background-color,transform] duration-100 ease-out hover:bg-bone focus-visible:ring-2 focus-visible:ring-bone focus-visible:ring-offset-2 focus-visible:ring-offset-ink-panel active:scale-[0.97] max-[400px]:px-5 max-[400px]:tracking-[0.1em] sm:inline-flex sm:justify-start sm:py-3.5"
             >
               Építsünk személyes márkát!
               <span

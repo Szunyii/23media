@@ -36,6 +36,33 @@ html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   background: var(--background);
+  /* phones: no grey flash over a tapped control (each one has its own press
+     state), and no font inflation when the phone is turned sideways */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* a control never double-tap-zooms, so the tap can fire at once */
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* Press feedback: the control dips the moment the finger (or the mouse button)
+   lands, instead of answering only on release. Unlayered on purpose, so it
+   outranks the element's `transition-colors`; `scale` is its own property,
+   so it stacks with a wrapper's transform (Magnetic). Not for elements GSAP
+   scales itself, nor for ones that transition anything but their colours. */
+.press {
+  transition:
+    color 0.3s,
+    background-color 0.3s,
+    border-color 0.3s,
+    scale 0.14s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.press:active {
+  scale: 0.97;
 }
 
 body {
