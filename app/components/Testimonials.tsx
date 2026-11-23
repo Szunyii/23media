@@ -240,8 +240,17 @@ function Wall({ children }: { children: ReactNode }) {
     };
 
     const deal = () => {
+      // Forget the last deal before anything is read. A tile still pinned to
+      // a column the grid no longer has (the window got narrower, a phone was
+      // turned upright) keeps that column alive as an implicit track, and the
+      // computed template counts it: a phone was dealt three columns, the
+      // real one squeezed to nothing and the wide tile left as a 20 px strip.
+      tiles.forEach((t) => {
+        t.style.gridColumn = "";
+        t.style.gridRow = "";
+        t.style.minHeight = "";
+      });
       cols = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
-      tiles.forEach((t) => (t.style.minHeight = ""));
       const wide = (el: HTMLElement) =>
         cols > 1 && el.hasAttribute("data-wide");
       const rest = tiles.filter((t) => t !== invite);
