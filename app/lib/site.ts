@@ -56,6 +56,8 @@ export const COMPANY = {
 export const HOSTING_PROVIDER = {
   name: "Hostinger International Ltd.",
   address: "61 Lordou Vironos Street, 6023 Larnaca, Ciprus",
+  /** Hostinger's own contact address for this entity: Universal Terms of Service, 24. Contact Information (checked 2026-11-28) */
+  email: "compliance@hostinger.com",
   url: "https://www.hostinger.com",
 } as const;
 

@@ -613,6 +613,7 @@ export const IMPRINT: LegalDoc = {
           rows: [
             ["Név", HOSTING_PROVIDER.name],
             ["Cím", HOSTING_PROVIDER.address],
+            ["E-mail", `[${HOSTING_PROVIDER.email}](mailto:${HOSTING_PROVIDER.email})`],
             ["Weboldal", `[hostinger.com](${HOSTING_PROVIDER.url})`],
           ],
         },
