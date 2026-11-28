@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
         destination: "https://23media.hu/:path*",
         permanent: true,
       },
+      // The draft "Felhasználási feltételek" page gave way to the lawyer's ÁSZF
+      // (2026-11-28); the old address was in the sitemap, so it keeps working.
+      { source: "/felhasznalasi-feltetelek", destination: "/aszf", permanent: true },
+      { source: "/felhasznalasi-feltetelek.md", destination: "/aszf.md", permanent: true },
     ];
   },
   // The MCP server card lives next to its endpoint (app/mcp/server-card);

@@ -24,33 +24,33 @@ export const CONTACT_EMAIL = "23@23media.hu";
 export const CONTENT_SIGNAL = "search=yes, ai-input=yes, ai-train=no";
 
 /**
- * The company behind the site, for the Impresszum and the privacy notice
- * (the data controller). Copy the values from the company registry extract.
- * A field left `null` is simply not shown — never put a placeholder here.
+ * The company behind the site: the company table of the lawyer's documents
+ * (Adatkezelési tájékoztató and ÁSZF, 2026-10-05), word for word except the
+ * e-mail. It fills that table on the privacy notice and the ÁSZF, the
+ * Impresszum and the Kapcsolat page's legal line.
  *
- * The client chose not to publish a phone number or a street address
- * (2026-11-22), so the schema.org Organization carries neither and there is no
- * `sameAs` (no social profiles). The registered seat is still required in the
- * Impresszum by law (Ekertv. 4. §).
+ * The phone number and the seat appear on the legal pages because the
+ * documents list them. The marketing surfaces stay as the client chose on
+ * 2026-11-22: no phone, street address or social profiles in the schema.org
+ * Organization, the footer or the agent APIs.
  */
-export const COMPANY: {
-  /** e.g. "23media Kft." */
-  legalName: string | null;
-  /** registered seat (székhely) */
-  seat: string | null;
-  /** cégjegyzékszám, or the sole-trader registration number */
-  registrationNumber: string | null;
-  /** e.g. "Fővárosi Törvényszék Cégbírósága" */
-  registry: string | null;
-  /** adószám */
-  taxNumber: string | null;
-} = {
-  legalName: null,
-  seat: null,
-  registrationNumber: null,
-  registry: null,
-  taxNumber: null,
-};
+export const COMPANY = {
+  legalName: "23 Media Korlátolt Felelősségű Társaság",
+  shortName: "23 Media Kft.",
+  seat: "6724 Szeged, Kossuth Lajos sugárút 72. B. ép.",
+  registrationNumber: "06-09-029324",
+  /** Not in the documents: the "06" of the registration number is the Szeged court. */
+  registry: "Szegedi Törvényszék Cégbírósága",
+  taxNumber: "32456510-2-06",
+  representative: "Engi Ádám ügyvezető",
+  /**
+   * The documents give the managing director's private address; the site
+   * gives the company mailbox everywhere instead — tables, the privacy and
+   * cookie contact lines (asked for 2026-11-28).
+   */
+  email: CONTACT_EMAIL,
+  phone: "+36 20 323 0797",
+} as const;
 
 /** Hosting and the 23@23media.hu mailbox both run at Hostinger (MX: mx1/mx2.hostinger.com). */
 export const HOSTING_PROVIDER = {
@@ -70,7 +70,9 @@ export const PAGES = {
   contact: { path: "/kapcsolat", title: "Kapcsolat" },
   consultation: { path: "/konzultacio", title: "Ingyenes konzultáció" },
   privacy: { path: "/adatvedelem", title: "Adatkezelési tájékoztató" },
-  terms: { path: "/felhasznalasi-feltetelek", title: "Felhasználási feltételek" },
+  // was /felhasznalasi-feltetelek (a draft) until the ÁSZF arrived; next.config redirects it
+  terms: { path: "/aszf", title: "ÁSZF" },
+  cookies: { path: "/cookie-szabalyzat", title: "Cookie szabályzat" },
   imprint: { path: "/impresszum", title: "Impresszum" },
 } as const;
 

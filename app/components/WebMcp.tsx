@@ -61,7 +61,7 @@ export default function WebMcp() {
       {
         name: "open_page",
         description:
-          "Megnyitja a 23media.hu egy oldalát vagy a főoldal egy szakaszát a látogató böngészőjében. Oldalak: home, about (rólunk), contact (kapcsolat), consultation (ingyenes konzultáció űrlap), privacy (adatkezelés), terms (felhasználási feltételek), imprint (impresszum). Főoldali szakaszok: services, references, founder.",
+          "Megnyitja a 23media.hu egy oldalát vagy a főoldal egy szakaszát a látogató böngészőjében. Oldalak: home, about (rólunk), contact (kapcsolat), consultation (ingyenes konzultáció űrlap), privacy (adatkezelés), terms (ÁSZF), cookies (cookie szabályzat), imprint (impresszum). Főoldali szakaszok: services, references, founder.",
         inputSchema: {
           type: "object",
           properties: {

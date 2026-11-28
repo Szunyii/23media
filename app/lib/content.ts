@@ -216,3 +216,19 @@ export const CONSULT = {
     },
   ],
 } as const;
+
+/**
+ * The required checkbox above the consultation form's button (asked for on
+ * 2026-11-28). The lawyer's checklist (Weboldali jogi implementációs jegyzék,
+ * point 1) advises against a required "hozzájárulok az adatkezeléshez" box:
+ * the legal basis here is the steps before a contract / legitimate interest,
+ * not consent. So the box carries the checklist's own notice sentence as an
+ * acknowledgment ("tudomásul veszem") — keep it that, not "elfogadom" or
+ * "hozzájárulok". `link` points to the privacy notice.
+ */
+export const CONSULT_PRIVACY_ACK = {
+  before:
+    "Tudomásul veszem, hogy a 23 Media Kft. a megadott adataimat az ingyenes konzultáció megszervezése és lebonyolítása céljából kezeli az ",
+  link: "Adatkezelési Tájékoztatóban",
+  after: " foglaltak szerint.",
+} as const;

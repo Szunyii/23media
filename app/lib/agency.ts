@@ -42,15 +42,23 @@ export function contactData() {
       summary: CONSULT.description,
       price: "ingyenes",
       steps: CONSULT.steps.map((s) => ({ title: s.t, description: s.d })),
-      requiredFields: ["vezetéknév", "keresztnév", "e-mail cím", "telefonszám", "foglalkozás"],
+      requiredFields: [
+        "vezetéknév",
+        "keresztnév",
+        "e-mail cím",
+        "telefonszám",
+        "foglalkozás",
+        "adatkezelési jelölőnégyzet (az Adatkezelési Tájékoztató tudomásulvétele, a látogató jelöli be)",
+      ],
       optionalFields: ["cégnév", "weboldal"],
     },
-    note: "A 23media telefonszámot és postacímet nem tesz közzé; e-mailben vagy a konzultációs űrlapon érhető el.",
+    note: "A 23media e-mailben vagy a konzultációs űrlapon érhető el. A cégadatok (23 Media Kft., székhely, cégjegyzékszám, adószám) az impresszumban vannak.",
     pages: {
       contact: absUrl(PAGES.contact.path),
       imprint: absUrl(PAGES.imprint.path),
-      privacy: absUrl(PAGES.privacy.path),
       terms: absUrl(PAGES.terms.path),
+      privacy: absUrl(PAGES.privacy.path),
+      cookies: absUrl(PAGES.cookies.path),
     },
   };
 }

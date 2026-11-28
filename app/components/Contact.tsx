@@ -120,8 +120,8 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* contact lines (phone and socials were dropped — the client publishes
-            neither). From lg up the sitemap is as wide as the CTA above it
+        {/* contact lines (phone and socials were dropped — the client keeps
+            both off the marketing pages). From lg up the sitemap is as wide as the CTA above it
             (w-48) and pushed to the same right edge, so the two start on one
             vertical; the legal links sit between. On phones e-mail and the
             sitemap share the first row, the legal links take the second. */}

@@ -13,9 +13,11 @@ export const ABOUT_LINKS = [
   { key: "contact", rel: undefined },
 ] as const;
 
+/** In the order of the lawyer's checklist (Weboldali jogi implementációs jegyzék, point 4). */
 export const LEGAL_LINKS = [
-  { key: "privacy", rel: "privacy-policy" },
   { key: "terms", rel: "terms-of-service" },
+  { key: "privacy", rel: "privacy-policy" },
+  { key: "cookies", rel: undefined },
   { key: "imprint", rel: undefined },
 ] as const;
 

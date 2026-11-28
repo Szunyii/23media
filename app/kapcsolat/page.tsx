@@ -14,11 +14,11 @@ export const metadata = pageMetadata("contact", DESCRIPTION);
 
 /**
  * Kapcsolat — the two ways in (e-mail, the consultation form), what happens
- * after, and who we are legally. No phone or street address: the client
- * doesn't publish them (2026-11-22).
+ * after, and who we are legally. No phone: the client keeps it off the
+ * marketing pages (2026-11-22); it is in the legal documents only.
  */
 export default function KapcsolatPage() {
-  const company = [COMPANY.legalName, COMPANY.seat].filter(Boolean).join(" · ");
+  const company = `${COMPANY.shortName} · ${COMPANY.seat}`;
 
   return (
     <Subpage>
@@ -92,7 +92,7 @@ export default function KapcsolatPage() {
       {/* who we are legally; the legal pages themselves are in the footer */}
       <section className="border-t border-line">
         <p className="mx-auto max-w-[1600px] px-5 py-10 text-[15px] text-bone-dim sm:px-8">
-          {company && <span className="text-bone">{company} — </span>}A szolgáltató adatai az{" "}
+          <span className="text-bone">{company} — </span>A szolgáltató adatai az{" "}
           <Link
             href={PAGES.imprint.path}
             className="text-bone underline decoration-accent/60 underline-offset-4 transition-colors hover:text-accent"

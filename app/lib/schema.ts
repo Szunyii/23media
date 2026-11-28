@@ -3,9 +3,10 @@
  * nodes refer to each other by `@id`, so the Organization, the founder and the
  * services are described once and reused by every page.
  *
- * Only facts the site itself states. The client publishes no phone number,
- * street address or social profiles (2026-11-22), so the Organization has no
- * `telephone`, `address` or `sameAs` — add them here if that changes.
+ * Only facts the site itself states. The client keeps phone, street address
+ * and social profiles off the marketing pages (2026-11-22) — the phone and the
+ * seat appear only in the legal documents — so the Organization has no
+ * `telephone`, `address` or `sameAs`; add them here if that changes.
  */
 import { absUrl } from "./agency";
 import { CONSULT, FOUNDER, PERSONAL_BRANDING, SERVICES, STATS, plain } from "./content";
@@ -37,8 +38,8 @@ function organization(): Node {
     "@id": ORG_ID,
     name: SITE_NAME,
     alternateName: "23 Media",
-    ...(COMPANY.legalName ? { legalName: COMPANY.legalName } : {}),
-    ...(COMPANY.taxNumber ? { taxID: COMPANY.taxNumber } : {}),
+    legalName: COMPANY.legalName,
+    taxID: COMPANY.taxNumber,
     url: SITE_URL,
     logo: { "@type": "ImageObject", url: `${SITE_URL}/icon-512.png`, width: 512, height: 512 },
     image: `${SITE_URL}/opengraph-image`,
@@ -57,7 +58,6 @@ function organization(): Node {
       availableLanguage: ["hu"],
     },
     hasOfferCatalog: { "@id": CATALOG_ID },
-    publishingPrinciples: absUrl(PAGES.terms.path),
   };
 }
 

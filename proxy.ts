@@ -18,7 +18,8 @@ const PAGE_PATHS = new Set([
   "/kapcsolat",
   "/konzultacio",
   "/adatvedelem",
-  "/felhasznalasi-feltetelek",
+  "/aszf",
+  "/cookie-szabalyzat",
   "/impresszum",
 ]);
 
@@ -88,7 +89,8 @@ export const config = {
     "/kapcsolat",
     "/konzultacio",
     "/adatvedelem",
-    "/felhasznalasi-feltetelek",
+    "/aszf",
+    "/cookie-szabalyzat",
     "/impresszum",
     "/:slug.md",
   ],

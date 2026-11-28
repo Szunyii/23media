@@ -13,6 +13,8 @@ export type InquiryFields = {
   phone: string;
   occupation: string;
   website: string;
+  /** the required privacy checkbox (CONSULT_PRIVACY_ACK) — an acknowledgment, not a consent */
+  privacy: boolean;
 };
 
 export type InquiryState =
@@ -72,6 +74,7 @@ export async function sendInquiry(
     phone: str(fd, "phone", 40),
     occupation: str(fd, "occupation", 300),
     website: str(fd, "website", 200),
+    privacy: fd.get("privacy") === "on",
   };
   const fail = (message: string): InquiryState => ({ status: "error", message, fields });
 
@@ -84,6 +87,8 @@ export async function sendInquiry(
 
   const website = fields.website ? normalizeUrl(fields.website) : "";
   if (website === null) return fail("Ez a weboldalcím nem tűnik jónak.");
+  // the browser enforces `required` too; this covers agents and scripted posts
+  if (!fields.privacy) return fail("A beküldéshez jelöld be az adatkezelési nyilatkozatot.");
 
   const inquiry = { ...fields, website };
 

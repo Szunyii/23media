@@ -2,15 +2,33 @@ import Subpage from "./Subpage";
 import SectionLabel from "./SectionLabel";
 import RichText from "./RichText";
 import JsonLd from "./JsonLd";
-import { LEGAL_EFFECTIVE, type LegalDoc } from "../lib/legal";
+import type { LegalDoc } from "../lib/legal";
 import { pageGraph } from "../lib/schema";
 import type { PageKey } from "../lib/site";
 
+/** One label/value list — the `rows` block, and each row of a `table` block. */
+function Pairs({ pairs, lead = false }: { pairs: [string, string][]; lead?: boolean }) {
+  return (
+    <dl className="divide-y divide-line rounded-sm border border-line">
+      {pairs.map(([k, v], i) => (
+        <div key={i} className="grid gap-1 px-4 py-3 sm:grid-cols-[11rem_1fr] sm:gap-4">
+          <dt className="eyebrow pt-[0.2em] text-muted">{k}</dt>
+          <dd className={lead && i === 0 ? "font-semibold text-bone" : "text-bone"}>
+            <RichText text={v} />
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 /**
- * A legal page — privacy notice, terms, imprint — set as a plain reading
- * column: the title holds still on the left from lg up, the numbered sections
- * run on the right. The text comes from lib/legal.ts, the same data the
- * Markdown version is built from.
+ * A legal page — privacy notice, ÁSZF, cookie policy, imprint — set as a plain
+ * reading column: the title holds still on the left from lg up, the numbered
+ * sections run on the right. The text comes from lib/legal.ts, the same data
+ * the Markdown version is built from. A table with a header row (the privacy
+ * notice's summary has four long columns) is set row by row as label/value
+ * cards, which reads at any width where four columns in a 68ch measure don't.
  */
 export default function LegalPage({ doc, pageKey }: { doc: LegalDoc; pageKey: PageKey }) {
   return (
@@ -24,7 +42,7 @@ export default function LegalPage({ doc, pageKey }: { doc: LegalDoc; pageKey: Pa
             <p className="mt-6 max-w-md text-base leading-relaxed text-bone-dim">
               <RichText text={doc.intro} />
             </p>
-            <p className="eyebrow mt-8 text-muted">Hatályos: {LEGAL_EFFECTIVE}</p>
+            {doc.effective && <p className="eyebrow mt-8 text-muted">Hatályos: {doc.effective}</p>}
           </header>
 
           <div className="max-w-[68ch]">
@@ -47,8 +65,8 @@ export default function LegalPage({ doc, pageKey }: { doc: LegalDoc; pageKey: Pa
                     if ("ul" in b)
                       return (
                         <ul key={j} className="space-y-2">
-                          {b.ul.map((li) => (
-                            <li key={li} className="flex gap-3">
+                          {b.ul.map((li, k) => (
+                            <li key={k} className="flex gap-3">
                               <span aria-hidden className="mt-[0.7em] h-px w-3 shrink-0 bg-accent" />
                               <span>
                                 <RichText text={li} />
@@ -57,17 +75,14 @@ export default function LegalPage({ doc, pageKey }: { doc: LegalDoc; pageKey: Pa
                           ))}
                         </ul>
                       );
+                    if ("rows" in b) return <Pairs key={j} pairs={b.rows} />;
+                    const { head, rows } = b.table;
                     return (
-                      <dl key={j} className="divide-y divide-line rounded-sm border border-line">
-                        {b.rows.map(([k, v]) => (
-                          <div key={k} className="grid gap-1 px-4 py-3 sm:grid-cols-[11rem_1fr] sm:gap-4">
-                            <dt className="eyebrow pt-[0.2em] text-muted">{k}</dt>
-                            <dd className="text-bone">
-                              <RichText text={v} />
-                            </dd>
-                          </div>
+                      <div key={j} className="space-y-3">
+                        {rows.map((row, r) => (
+                          <Pairs key={r} lead pairs={row.map((cell, c): [string, string] => [head[c], cell])} />
                         ))}
-                      </dl>
+                      </div>
                     );
                   })}
                 </div>

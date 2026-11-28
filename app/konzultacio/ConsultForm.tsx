@@ -5,7 +5,8 @@ import Link from "next/link";
 import { gsap, useGSAP } from "../lib/gsap";
 import Magnetic from "../components/Magnetic";
 import { sendInquiry, type InquiryFields, type InquiryState } from "./actions";
-import { CONSULT } from "../lib/content";
+import { CONSULT, CONSULT_PRIVACY_ACK } from "../lib/content";
+import { PAGES } from "../lib/site";
 import { getModelContext, type AgentSubmitEvent } from "../lib/webmcp";
 
 const STEPS = CONSULT.steps;
@@ -21,6 +22,7 @@ const EMPTY: InquiryFields = {
   phone: "",
   occupation: "",
   website: "",
+  privacy: false,
 };
 
 /* Inline "fill in the blank" field — bare underline, accent caret, no box. */
@@ -434,7 +436,34 @@ export default function ConsultForm() {
             </p>
 
             <div data-consult-row className="translate-y-4 opacity-0">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
+              {/* the privacy checkbox, then the button — stacked at every width:
+                  side by side, the three-line text squeezed the button's
+                  wrapper (global `min-width: 0`) and ran under the button */}
+              <div className="flex flex-col gap-6 sm:gap-8">
+                <label className="flex max-w-xl cursor-pointer items-start gap-3.5 text-[13.5px] leading-relaxed text-bone-dim sm:text-[14px]">
+                  <input
+                    type="checkbox"
+                    name="privacy"
+                    required
+                    defaultChecked={values.privacy}
+                    toolparamdescription="Kötelező adatkezelési nyilatkozat: a látogató tudomásul veszi az Adatkezelési Tájékoztatót. Csak a látogató kifejezett jóváhagyásával jelöld be; ha nem kérdezted meg, hagyd üresen, és beküldés előtt ő jelöli be."
+                    className="mt-[0.2em] h-[1.05rem] w-[1.05rem] shrink-0 cursor-pointer accent-accent"
+                  />
+                  {/* the checklist's sentence as an acknowledgment — see CONSULT_PRIVACY_ACK.
+                      The notice opens in a new tab so the filled-in form survives. */}
+                  <span>
+                    {CONSULT_PRIVACY_ACK.before}
+                    <Link
+                      href={PAGES.privacy.path}
+                      target="_blank"
+                      rel="privacy-policy noopener"
+                      className="text-bone underline decoration-accent/60 underline-offset-2 transition-colors hover:text-accent"
+                    >
+                      {CONSULT_PRIVACY_ACK.link}
+                    </Link>
+                    {CONSULT_PRIVACY_ACK.after}
+                  </span>
+                </label>
                 <Magnetic strength={0.4}>
                   <button
                     type="submit"
@@ -461,16 +490,6 @@ export default function ConsultForm() {
                     </span>
                   </button>
                 </Magnetic>
-                <p className="max-w-xs font-mono text-[10px] uppercase leading-relaxed tracking-[0.2em] text-muted">
-                  Az adataidat csak a megkeresés kezelésére használjuk.{" "}
-                  <Link
-                    href="/adatvedelem"
-                    rel="privacy-policy"
-                    className="text-bone-dim underline decoration-accent/60 underline-offset-2 transition-colors hover:text-accent"
-                  >
-                    Adatkezelés
-                  </Link>
-                </p>
               </div>
 
               {state.status === "error" && (

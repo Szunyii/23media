@@ -7,6 +7,7 @@
  */
 import {
   CONSULT,
+  CONSULT_PRIVACY_ACK,
   FOUNDER,
   MANIFESTO,
   PB_PILLARS,
@@ -18,6 +19,7 @@ import {
 import { LEGAL_DOCS, type LegalDoc } from "./legal";
 import {
   CONTACT_EMAIL,
+  CONTENT_SIGNAL,
   PAGES,
   SITE_DESCRIPTION,
   SITE_NAME,
@@ -164,7 +166,7 @@ function home(): string {
     "",
     `- E-mail: ${CONTACT_EMAIL}`,
     `- ${pageLink("consultation")} — ${CONSULT.description}`,
-    `- ${pageLink("about")} · ${pageLink("contact")} · ${pageLink("privacy")} · ${pageLink("terms")} · ${pageLink("imprint")}`,
+    `- ${pageLink("about")} · ${pageLink("contact")} · ${pageLink("terms")} · ${pageLink("privacy")} · ${pageLink("cookies")} · ${pageLink("imprint")}`,
     "",
     nav("home"),
   ].join("\n");
@@ -208,8 +210,9 @@ function contact(): string {
     "## Jogi információk",
     "",
     `- ${pageLink("imprint")} — a szolgáltató adatai`,
+    `- ${pageLink("terms", "Általános szerződési feltételek (ÁSZF)")}`,
     `- ${pageLink("privacy")}`,
-    `- ${pageLink("terms")}`,
+    `- ${pageLink("cookies")}`,
     "",
     nav("contact"),
   ].join("\n");
@@ -227,6 +230,8 @@ function consultation(): string {
     "",
     "Mezők (* = kötelező): vezetéknév*, keresztnév*, e-mail cím*, telefonszám* (előhívóval), foglalkozás* (pár szóban), cégnév, weboldal.",
     "",
+    `Beküldés előtt kötelező bejelölni: „${CONSULT_PRIVACY_ACK.before}${pageLink("privacy", CONSULT_PRIVACY_ACK.link)}${CONSULT_PRIVACY_ACK.after}”`,
+    "",
     "Böngészőben futó AI-ügynökök az űrlapot a `request_consultation` WebMCP-eszközként is kitölthetik; a beküldést a látogató hagyja jóvá.",
     "",
     "## Mi történik ezután",
@@ -235,23 +240,39 @@ function consultation(): string {
     "",
     `Inkább írnál? ${CONTACT_EMAIL}`,
     "",
-    `Az adataid kezeléséről: ${pageLink("privacy")}.`,
-    "",
     nav("consultation"),
   ].join("\n");
 }
 
+const cell = (s: string) => absLinks(s).replace(/\|/g, "\\|");
+
+/** Sections numbered like the documents ("1.", "2." …), since their text refers to them by number. */
 function legal(doc: LegalDoc, key: PageKey): string {
-  const blocks = doc.sections.flatMap((s) => [
-    `## ${s.h}`,
+  const blocks = doc.sections.flatMap((s, i) => [
+    `## ${i + 1}. ${s.h}`,
     "",
     ...s.blocks.flatMap((b) => {
       if ("p" in b) return [absLinks(b.p), ""];
       if ("ul" in b) return [...b.ul.map((li) => `- ${absLinks(li)}`), ""];
-      return [...b.rows.map(([k, v]) => `- **${k}:** ${absLinks(v)}`), ""];
+      if ("rows" in b) return [...b.rows.map(([k, v]) => `- **${k}:** ${absLinks(v)}`), ""];
+      const { head, rows } = b.table;
+      return [
+        `| ${head.map(cell).join(" | ")} |`,
+        `| ${head.map(() => "---").join(" | ")} |`,
+        ...rows.map((r) => `| ${r.map(cell).join(" | ")} |`),
+        "",
+      ];
     }),
   ]);
-  return [`# ${doc.title} — ${SITE_NAME}`, "", absLinks(doc.intro), "", ...blocks, nav(key)].join("\n");
+  return [
+    `# ${doc.title} — ${SITE_NAME}`,
+    "",
+    absLinks(doc.intro),
+    "",
+    ...(doc.effective ? [`*Hatályos: ${doc.effective}*`, ""] : []),
+    ...blocks,
+    nav(key),
+  ].join("\n");
 }
 
 const BUILDERS: Record<PageKey, () => string> = {
@@ -261,6 +282,7 @@ const BUILDERS: Record<PageKey, () => string> = {
   consultation,
   privacy: () => legal(LEGAL_DOCS.privacy, "privacy"),
   terms: () => legal(LEGAL_DOCS.terms, "terms"),
+  cookies: () => legal(LEGAL_DOCS.cookies, "cookies"),
   imprint: () => legal(LEGAL_DOCS.imprint, "imprint"),
 };
 
@@ -290,6 +312,8 @@ export function llmsTxt(): string {
     "",
     "Minden oldal Markdownban is elérhető: a `.md` végű címen, vagy `Accept: text/markdown` fejléccel az eredeti címen.",
     "",
+    `A tartalom felhasználása (robots.txt, Content-Signal: ${CONTENT_SIGNAL}): keresőben és AI-válaszokban igen, AI-modellek tanítására nem.`,
+    "",
     "## Oldalak",
     "",
     md("home", "szolgáltatások, kiemelt personal branding, ügyfélvélemények, számok, alapítói levél"),
@@ -310,9 +334,10 @@ export function llmsTxt(): string {
     "",
     "## Optional",
     "",
-    md("privacy", "milyen adatokat kezelünk és miért"),
-    md("terms", "a weboldal használata, AI-felhasználás (keresés és AI-válasz igen, modelltanítás nem)"),
-    md("imprint", "a szolgáltató és a tárhelyszolgáltató adatai"),
+    md("terms", "általános szerződési feltételek: konzultáció, szerződés, díjazás, szellemi tulajdon, felelősség, panaszkezelés"),
+    md("privacy", "a 23 Media Kft. adatkezelési tájékoztatója: milyen adatokat, mire, milyen jogalapon és meddig kezel"),
+    md("cookies", "cookie (süti) szabályzat — az oldal jelenleg nem használ sütit"),
+    md("imprint", "a szolgáltató (23 Media Kft.) és a tárhelyszolgáltató adatai"),
     "",
   ].join("\n");
 }

@@ -94,7 +94,7 @@ const TOOLS: {
     name: "get_page",
     title: "Oldal Markdownban",
     description:
-      "A 23media.hu egy oldalának teljes szövege Markdownban. Oldalak: home (főoldal), about (rólunk), contact (kapcsolat), consultation (ingyenes konzultáció), privacy (adatkezelési tájékoztató), terms (felhasználási feltételek), imprint (impresszum).",
+      "A 23media.hu egy oldalának teljes szövege Markdownban. Oldalak: home (főoldal), about (rólunk), contact (kapcsolat), consultation (ingyenes konzultáció), privacy (adatkezelési tájékoztató), terms (ÁSZF, általános szerződési feltételek), cookies (cookie szabályzat), imprint (impresszum).",
     inputSchema: {
       type: "object",
       properties: { page: { type: "string", enum: PAGE_KEYS, description: "Az oldal azonosítója." } },

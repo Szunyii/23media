@@ -10,6 +10,7 @@ const RANK: Record<PageKey, Pick<MetadataRoute.Sitemap[number], "changeFrequency
   contact: { changeFrequency: "yearly", priority: 0.6 },
   privacy: { changeFrequency: "yearly", priority: 0.3 },
   terms: { changeFrequency: "yearly", priority: 0.3 },
+  cookies: { changeFrequency: "yearly", priority: 0.3 },
   imprint: { changeFrequency: "yearly", priority: 0.3 },
 };
 

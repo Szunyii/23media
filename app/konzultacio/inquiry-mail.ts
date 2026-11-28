@@ -29,6 +29,9 @@ const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
 const DASH = "—";
 
+/** The server only delivers a submission with the privacy box ticked, so every mail can say so — a record of it. */
+const PRIVACY_RECORD = "Adatkezelés: bejelölte, hogy tudomásul veszi az Adatkezelési Tájékoztatót.";
+
 function esc(v: string) {
   return v
     .replace(/&/g, "&amp;")
@@ -84,6 +87,7 @@ export function inquiryText(i: InquiryMail, at: Date) {
     "",
     "—",
     `Beküldve: ${submittedAt(at)}`,
+    PRIVACY_RECORD,
     `Erre a levélre válaszolva közvetlenül neki írsz (${i.email}).`,
   ].join("\n");
 }
@@ -168,6 +172,7 @@ export function inquiryHtml(i: InquiryMail, at: Date) {
           <td style="padding:28px 32px 28px;">
             <div style="border-top:1px solid ${LINE};padding-top:16px;font-family:${FONT};font-size:13px;line-height:1.5;color:${MUTED};">
               Beküldve: ${esc(submittedAt(at))} · <a href="https://23media.hu/konzultacio" style="color:${MUTED};">23media.hu/konzultacio</a><br>
+              ${esc(PRIVACY_RECORD)}<br>
               Erre a levélre válaszolva közvetlenül neki írsz (${esc(i.email)}).
             </div>
           </td>
